@@ -1,0 +1,179 @@
+! S3M info file
+
+
+&S3M_Namelist
+
+! FLAG(S) INFO ----------------------------------------------------------------------------------
+! Domain name
+sDomainName = 'vda'
+
+! Debug flag set (iDEBUG = 0; iDEBUG = 1)
+iFlagDebugSet = 0
+! Debug flag level (iNFO_Basic = 0; iINFO_Main = 1; iINFO_Verbose = 2; iINFO_Extra = 3)
+iFlagDebugLevel = 3
+
+! Data type dynamic gridded restart (1 = binary_int; 2 = binary_dbl; 3 = netcdf)
+iFlagTypeData_Forcing_Gridded = 3
+! Data type dynamic updating (1 = binary_int; 2 = binary_dbl; 3 = netcdf)
+iFlagTypeData_Updating_Gridded = 3
+! Data type dynamic ass. SWE (1 = binary_int; 2 = binary_dbl; 3 = netcdf)
+iFlagTypeData_Ass_SWE_Gridded = 3
+
+! Restart a run (1 = yes; 0 = no)
+iFlagRestart = 0
+! Computing snow assimilation MODIS + Snow Height (1 = yes; 0 = no)
+iFlagSnowAssim = 1
+! Computing snow assimilation of SWE (1 = yes; 0 = no)
+iFlagSnowAssim_SWE = 0
+! Compute ice mass balance (0 = no; 1 = yes, with no movement; 2 = yes, with movement and simple snow-to-ice conversion)
+iFlagIceMassBalance = 0
+! Read glacier thickness from TerrainData (0 = no; 1 = yes - no means it will look for it inside the restart file)
+iFlagThickFromTerrData = 1
+! Apply GlacierDebris Mask (0 = no; 1 = yes)
+iFlagGlacierDebris = 0
+! Output mode (0 = basic output layers; 1 = extended, all layers -- much slower)
+iFlagOutputMode = 0
+! Assimilate only positive differences (0 = no; 1 = yes)
+iFlagAssOnlyPos = 0
+! -----------------------------------------------------------------------------------------------
+
+! GEOGRAPHICAL INFO -----------------------------------------------------------------------------
+! Forcing data lower left angle coordinate
+a1dGeoForcing = 45.461001, 6.793001 
+! Forcing data lat and lon cellsize
+a1dResForcing = 0.002582, 0.002582
+! Forcing data dimensions
+a1iDimsForcing = 206, 446
+! -----------------------------------------------------------------------------------------------
+
+! DT INFO ---------------------------------------------------------------------------------------
+! Simulation length [hours]
+iSimLength = 8760
+! Model dT [seconds]
+iDtModel = 3600
+! Data forcing gridded dT [seconds]
+iDtData_Forcing = 3600
+! Data output gridded dT [seconds]
+iDtData_Output = 3600
+! Data updating gridded dT [seconds] --> minimum commom step between updating data
+iDtData_Updating = 3600
+! Data Assimilation SWE gridded dT [seconds]
+iDtData_AssSWE = 3600
+!------------------------------------------------------------------------------------------------
+
+! DATA INFO -------------------------------------------------------------------------------------
+! Forcing data rescaling factor (permitted: 1 or 10 or 100 or 1000) --> used for binary data
+iScaleFactor_Forcing = 10
+! Updating data rescaling factor (permitted: 1 or 10 or 100 or 1000) --> used for binary data
+iScaleFactor_Update = 100
+! SWE map assimilation data rescaling factor (permitted: 1 or 10 or 100 or 1000) --> used for binary data
+iScaleFactor_SWEass = 10
+! -----------------------------------------------------------------------------------------------
+
+! TIME INFO -------------------------------------------------------------------------------------
+! Start time (yyyymmddHHMM format)
+sTimeStart = 201609010000
+! Re-start time (yyyymmddHHMM format)
+sTimeRestart = 201608312300
+! -----------------------------------------------------------------------------------------------
+
+! PATH(S) INFO ----------------------------------------------------------------------------------
+! DATA STATIC
+! Static gridded data path [Variable(s) --> DEM, CN]
+sPathData_Static_Gridded = '/home/'
+
+! DATA DYNAMIC
+! Forcing gridded data path [Variable(s) --> Rain, AirTemperature, IncRadiation, RelHumidity]
+sPathData_Forcing_Gridded = '/home/$yyyy/$mm/$dd/'
+
+! Updating gridded data path [Variable(s) --> SnowCoverArea, SnowQuality, SnowMask, SnowHeight, SnowKernel]
+sPathData_Updating_Gridded = '/home/$yyyy/$mm/$dd/'
+
+! Output gridded data path
+sPathData_Output_Gridded = '/home/$yyyy/$mm/$dd/'
+
+! Restart gridded data path
+sPathData_Restart_Gridded = '/home/'
+
+! SWE assimilation gridded data path [Variable(s) --> SWE coming from external source, ex. ARPA VdA]
+sPathData_SWE_Assimilation_Gridded = '/home/$yyyy/$mm/$dd/'
+! -----------------------------------------------------------------------------------------------
+
+/
+
+&S3M_Snow
+
+! SNOW MODEL DEFAULT CONSTANTS ------------------------------------------------------------------
+! T-driven snowmelt coefficient [-] 
+a1dArctUp = 1.1, 1.1, 1.1, 1.1
+! Altitude range to select a1dArctUp low and high [m asl]
+a1dAltRange = 1500, 2000, 2500
+! Value of glacier(s) in glacier mask [-]
+iGlacierValue = 1
+! Maximum fresh snow density [kg/m^3]
+dRhoSnowFresh = 200
+! Maximum snow density [kg/m^3]
+dRhoSnowMax = 400
+! Minimum snow density [kg/m^3]
+dRhoSnowMin = 67.9
+! Quality threshold of snow cover area map [-]
+dSnowQualityThr = 0.3
+! Snow melting reference temperature [C] 
+dMeltingTRef = 1
+! Ice melting coeff. [-]
+dIceMeltingCoeff = 1
+! Day(s) of influence of SWE assimilated map
+iSWEassInfluence = 6
+! Weigth of SWE assimilation [-] (0 < range < 1) --> 0.25 recommended
+dWeightSWEass = 0.25
+! Refreezing coefficient [-]
+dRefreezingSc = 1.0
+! Modulation Factor for radiation-driven snowmelt [-] 
+dModFactorRadS = 1.125
+! Starting month for the water year [-, two digits since it's read as string!] 
+sWYstart = 09
+! Glacier-debris threshold [-, threshold for applying debris correction ] 
+dDebrisThreshold = 0.2
+! -----------------------------------------------------------------------------------------------
+
+/
+
+&S3M_Command
+
+! COMMAND LINE ----------------------------------------------------------------------------------
+! Line to zip file (tag(s): filenameunzip)
+sCommandZipFile = 'gzip -f filenameunzip > LogZip.txt'
+! sCommandZipFile = 7z.exe a -tzip filenamezip
+! Line to unzip file (tag(s): filenameunzip and filenamezip)
+sCommandUnzipFile = 'gunzip -c filenamezip > filenameunzip'
+!sCommandUnzipFile = 7z.exe e -tgzip filenamezip
+! Line to remove file (tag(s): filename)
+!sCommandRemoveFile = rm filename
+sCommandRemoveFile = 'rm filename'
+! Line to create folder (tag(s): path)
+sCommandCreateFolder = 'mkdir -p path'
+!sCommandCreateFolder = mkdir path
+! -----------------------------------------------------------------------------------------------
+
+/
+
+&S3M_Constants
+
+! Water density [kg/m^-3]
+dRhoW = 1000
+
+/
+
+&S3M_Info
+
+! INFO MODEL ------------------------------------------------------------------------------------
+! Release version     (x.x.x)
+sReleaseVersion = '5.1.0'
+! Author(s)         (Surname N.)
+sAuthorNames = 'Avanzi F., Delogu F., Dolia D., Gabellani S., Silvestro F.'
+! Release Date      (yyyy/mm/dd)
+sReleaseDate = '2021/03/23'
+! -----------------------------------------------------------------------------------------------
+
+/
+
