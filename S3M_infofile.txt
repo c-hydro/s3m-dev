@@ -170,7 +170,7 @@ dRhoW = 1000
 ! Release version     (x.x.x)
 sReleaseVersion = '5.1.0'
 ! Author(s)         (Surname N.)
-sAuthorNames = 'Avanzi F., Delogu F., Dolia D., Gabellani S., Silvestro F.'
+sAuthorNames = 'Avanzi F., Gabellani S., Delogu F., Silvestro F.'
 ! Release Date      (yyyy/mm/dd)
 sReleaseDate = '2021/03/23'
 ! -----------------------------------------------------------------------------------------------
