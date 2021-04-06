@@ -114,28 +114,28 @@ Where domainname.info.txt is the namelist file with all model settings (see an e
 After setting the environment and all needed options for running the model, the users will be able to achieve a deeper understanding of S3M by, e.g., using breakpoints and all the features available in the **gdb** debugging library [9_].
 
 Contribute and Guidelines
-*************************
+-----------------
 
 We are happy if you want to contribute. Please raise an issue explaining what is missing or if you find a bug. We will also gladly accept pull requests in our master branch for new features or bug fixes.
 
 Authors
-*******
+-----------------
 
 All authors involved in the library development for S3M are reported in this authors_ file.
 
 License
-*******
+-----------------
 
 By accessing or using S3M, code, data or documentation, you agree to be bound by the S3M license available. See the license_ for details. 
 
 Changelog
-*********
+-----------------
 
 All notable changes and bug fixing fir this project will be documented in this changelog_ file.
     
     
 References
-**********
+-----------------
 | [1_] CIMA Hydrology and Hydraulics GitHub Repository
 | [2_] Fortran programming language
 | [3_] FloodPROOFS virtual environment tools
