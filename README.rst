@@ -71,37 +71,47 @@ then click on the […] icon, select ‘’Add Library…’’ and find the fol
 
   netcdff.a and netcdff.so 
   
-Please select files with the "double f" for fortran libraries!
+Please select files with the "double f" for fortran libraries! Press OK.
+
+Second, right-click on the project name on the left menu where the name of the project is visible and then follow: 
 
   5) Properties --> Linker --> Additional Options
      
-      Here, the user should include the following instructions, where ‘’ path_to_netcdf’’ must be replaced with the actual path to the NetCDF library in user’s machine:
-      -I/path_to_netcdf/include/ 
-      -L/path_to_netcdf/lib/ 
-      -lnetcdff -lnetcdf   
+Here, the user should include the following instructions, where ‘’ path_to_netcdf’’ must be replaced with the actual path to the NetCDF library in user’s machine:
+
+  -I/path_to_netcdf/include/ 
+  -L/path_to_netcdf/lib/ 
+  -lnetcdff -lnetcdff   
       
-      Please note that the first line starts with a capital i, for ‘’Include’’! 
+Please note that the first line starts with a capital i, for ‘’Include’’!  Press OK.
+
+Third, right-click on the project name on the left menu where the name of the project is visible and then follow: 
 
   6) Properties --> Fortran Compiler --> Additional Options
 
       -I/path_to_netcdf/include/ 
       -L/path_to_netcdf/lib/ 
-      -lnetcdff -lnetcdf  
+      -lnetcdff -lnetcdff  
       
-      Here again, ‘’ path_to_netcdf’’ must be replaced with the actual path to the NetCDF library in user’s machine.
+Here again, ‘’ path_to_netcdf’’ must be replaced with the actual path to the NetCDF library in user’s machine. Press OK. 
 
+Fourth, right-click on the project name on the left menu where the name of the project is visible and then follow: 
 
   7) Properties --> Fortran Compiler --> Additional Options
   
       gfortran: -cpp -DLIB_NC
       ifort: -fpp -DLIB_NC  
 
+Press OK. 
+
+Fifth, right-click on the project name on the left menu where the name of the project is visible and then follow:
+
   8) Properties --> Run --> Environment --> NewValue
   
       Name: LD_LIBRARY_PATH 
       Value: $LD_LIBRARY_PATH:/path_to_necdf/lib/
       
-      Here again, ‘’ path_to_netcdf’’ must be replaced with the actual path to the NetCDF library in user’s machine.
+Here again, ‘’ path_to_netcdf’’ must be replaced with the actual path to the NetCDF library in user’s machine. Press OK.
 
 Once the NetCDF4 are linked, it will be possible to compile each source file in NetBeans using the F9 key. Note that the bash file called **configure.sh** [7_] specifies the correct order for compiling source files. 
 
