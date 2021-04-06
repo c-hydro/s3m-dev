@@ -1,6 +1,6 @@
 !------------------------------------------------------------------------------------------    
 ! File:   S3M_Module_Phys.f90
-! Author: Fabio Delogu, Daniele Dolia.
+! Author: Fabio Delogu.
 !
 ! Created on April 2, 2014, 5:19 PM
 ! Last update on Sep 06, 2018 11:00 AM

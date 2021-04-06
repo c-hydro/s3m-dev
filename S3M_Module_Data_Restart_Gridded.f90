@@ -1,6 +1,6 @@
 !------------------------------------------------------------------------------------------    
 ! File:   S3M_Module_Data_Restart_Gridded.f90
-! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Daniele Dolia, Francesco Avanzi.
+! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Francesco Avanzi.
 !
 ! Created on May 7, 2015, 1:27 PM
 ! Last update on October 26, 2020 11:25 AM

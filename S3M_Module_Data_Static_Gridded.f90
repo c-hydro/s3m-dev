@@ -1,6 +1,6 @@
 !------------------------------------------------------------------------------------------    
 ! File:   S3M_Module_Data_Static_Gridded.f90
-! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Daniele Dolia, Francesco Avanzi.
+! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Francesco Avanzi.
 !
 ! Created on April 30, 2015, 9:45 AM
 ! Last update on Dec 10, 2020 10:00 AM

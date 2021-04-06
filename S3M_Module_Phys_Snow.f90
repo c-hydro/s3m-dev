@@ -1,6 +1,6 @@
 !------------------------------------------------------------------------------------
 ! File:   S3M_Module_Phys_Snow.f90
-! Author:   Francesco Avanzi, Fabio Delogu, Daniele Dolia, Simone Gabellani.
+! Author:   Francesco Avanzi, Fabio Delogu, Simone Gabellani.
 !
 ! Created on Jul 15, 2015 11:00 AM
 ! Last update on October 26, 2020 03:16 PM

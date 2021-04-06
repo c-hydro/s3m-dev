@@ -1,6 +1,6 @@
 !--------------------------------------------------------------------------------  
 ! File:   S3M_Module_Args.f90
-! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Daniele Dolia, Francesco Avanzi
+! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Francesco Avanzi
 !
 ! Created on February 15, 2017, 4:40 PM
 ! Last update on Oct 27, 2020 11:45 AM

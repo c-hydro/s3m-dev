@@ -1,6 +1,6 @@
 !------------------------------------------------------------------------------------
 ! File:      S3M_Module_Function_IO.f90
-! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Daniele Dolia.
+! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani.
 !
 ! Created on May 11, 2015, 10:27 AM
 ! Last update on Nov 19, 2020 8:30 AM

@@ -1,6 +1,6 @@
 !------------------------------------------------------------------------------------------    
 ! File:   S3M_Module_Data_AssSWE_Gridded.f90
-! Author(s): Daniele Dolia, Francesco Avanzi
+! Author(s): Francesco Avanzi
 !
 ! Created on September 05, 2018, 11:00 AM
 ! Last update on October 26, 2020 08:55 AM

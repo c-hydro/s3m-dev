@@ -1,6 +1,6 @@
 !------------------------------------------------------------------------------------
 ! File:   S3M_Module_Phys_Snow_Apps_Assimilation.f90
-! Author:   Simone Gabellani, Fabio Delogu, Daniele Dolia, Francesco Avanzi.
+! Author:   Simone Gabellani, Fabio Delogu, Francesco Avanzi.
 !
 ! Created on June 10, 2020 5:00 PM
 ! Last update on October 26, 2020 5:00 PM

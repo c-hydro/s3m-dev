@@ -1,6 +1,6 @@
 !------------------------------------------------------------------------------------------    
 ! File:   S3M_Module_Data_Forcing_Gridded.f90
-! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Daniele Dolia, Francesco Avanzi
+! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Francesco Avanzi
 !
 ! Created on April 22, 2015, 5:19 PM
 ! Last update on Nov 19, 2020 08:30 AM

@@ -1,6 +1,6 @@
 !--------------------------------------------------------------------------------  
 ! File:   S3M_Module_Namelist.f90
-! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Daniele Dolia, Francesco Avanzi.
+! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Francesco Avanzi.
 !
 ! Created on May, 20 2014, 9:57 AM
 ! Last update on October 26, 2020 03:14 PM
