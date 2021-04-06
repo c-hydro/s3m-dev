@@ -39,7 +39,7 @@ Usually, options are set as follows:
     • set profiler option [2] for skipping profiling, which is used to control model performances;
     • set NetCDF4 library [1] for using NetCDF4 input and output files format. 
        
-The user will then be given an opportunity to set the path of this NetCDF4 library, for example in the form “$HOME/user/fp_libs_system/nc4”. By pressing the ENTER key instead of specifying the path, the script will try to locate this library automatically. 
+The user will then be given an opportunity to set the path of the NetCDF4 library, for example in the form “$HOME/user/fp_libs_system/nc4”. By pressing the ENTER key instead of specifying the path, the script will try to locate this library automatically. 
 
 Finally, the user will be allowed to choose a name for the .x compiled model. Here again, by pressing the ENTER key instead of specifying the name, the script will assign this name automatically. 
 
@@ -56,20 +56,22 @@ Second, users should create a New Project following this path:
 
   2) File --> New Project --> Categories :: Samples :: C/C++ --> Projects :: Fortran Hello World Application --> Next --> Choose Name --> Close
 
-After creating this folder project, users should first remove all default source code under the ‘’Source Files’’ directory on the left menu, where the name of the project is visible, and second move all required source files of S3M into the folder associated to this project. The first step must be performed from Netbeans, while the second step must be performed externally from NetBeans using standard copy-paste. Third, source-code files must now be imported in the NetBeans project using the left menu where the name of the project is visible, right-clicking on the project, and choosing:
+After creating this folder project, users should first remove all default source code under the ‘’Source Files’’ directory on the left menu, where the name of the project is visible, and second move all required source files of S3M into the system physical folder associated to this project. The first step must be performed from Netbeans, while the second step must be performed externally from NetBeans using standard copy-paste. Third, source-code files must now be imported in the NetBeans project using the left menu where the name of the project is visible, right-clicking on the project, and choosing:
 
   3) Add existing item ...
 
-Performing this action, a form to select files will be opened. After selecting all required files from the project folder, all source files will now be available into the NetBeans project under the ‘’Source Files’’ directory. Note that copy-pasting source files into the project folder ensures that NetBeans will correctly link the project to the source code located in the same physical folder of the NetBeans project. Despite this step not being compulsory, NetBeans does not physically create files into the project folder if one added items from another folder, meaning the user may end up inadvertently modifying source code from other branches or versions of S3M. 
+Performing this action, a form to select files will be opened. After selecting all required files from the project folder, all source files will now be available into the NetBeans project under the ‘’Source Files’’ directory. Note that copy-pasting source files into the project folder ensures that NetBeans will correctly link the project to the source code located in the same physical folder of the NetBeans project. Despite this step not being compulsory, NetBeans does not physically create files into the project folder if one added items directly from another folder within Netbeans, meaning the user may end up inadvertently modifying source code from other folders, including other branches or versions of S3M. 
 
 Next steps cover the configuration of dependencies in the project. Particularly, the main task is to link the NetCDF library to the project.
 For configuring the NetCDF4 in Apache NetBeans IDE, users must first right-click on the project name on the left menu where the name of the project is visible and then follow: 
 
   4) Properties --> Linker --> Libraries,
   
-     then click on the […] icon, select ‘’Add Library…’’ and find the following files in /path_to_netcdf/
-     netcdff.a and netcdff.so 
-     Please select files with the "double f" for fortran libraries!
+then click on the […] icon, select ‘’Add Library…’’ and find the following files in /path_to_netcdf/
+
+  netcdff.a and netcdff.so 
+  
+Please select files with the "double f" for fortran libraries!
 
   5) Properties --> Linker --> Additional Options
      
