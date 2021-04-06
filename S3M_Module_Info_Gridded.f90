@@ -64,7 +64,7 @@ contains
         real(kind = 4),  dimension (iRows, iCols)       :: a2dVar_DEF 
         real(kind = 4),  dimension (iRows * iCols)      :: a1dVar_DEF
         
-        integer(kind = 4)                               :: iGlaciers_ID_DEF
+        integer(kind = 4)                               :: iGlaciers_ID_DEF, iFlagIceMassBalance
         integer(kind = 4), dimension(:), allocatable    :: a1iGlaciers_ID_UNIQUE, a1iGlaciers_ID_DEF
         real(kind = 4), dimension(:), allocatable    :: a1dGlaciers_ID_DEF
         !------------------------------------------------------------------------------------
@@ -79,11 +79,13 @@ contains
         sDomainName = oS3M_Namelist(iID)%sDomainName
         sPathData = oS3M_Namelist(iID)%sPathData_Static_Gridded
         sCommandUnzip = oS3M_Namelist(iID)%sCommandUnzipFile
+        iFlagIceMassBalance = oS3M_Namelist(iID)%iFlagIceMassBalance
 
         ! Get variable(s) dimension(s)
         call mprintf(.true., iINFO_Main, ' Define land geographical data  ... ')
         !------------------------------------------------------------------------------------
         
+        if (iFlagIceMassBalance .eq. 2) then
         !------------------------------------------------------------------------------------
         ! Get info from netCDF data
 #ifdef LIB_NC
@@ -138,6 +140,11 @@ contains
             iGlaciers_ID_DEF = size(a1iGlaciers_ID_DEF)
             !------------------------------------------------------------------------------------
 #endif
+        else
+            iGlaciers_ID_DEF = 0
+            allocate( a1iGlaciers_ID_DEF(1) )
+            a1iGlaciers_ID_DEF = -9999
+        endif
         !------------------------------------------------------------------------------------
         
     end subroutine S3M_Info_Gridded_GetDims_Ancillary
