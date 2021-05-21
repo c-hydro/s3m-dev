@@ -3,7 +3,7 @@
 ! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Francesco Avanzi
 !
 ! Created on February 11 2015, 9:57 AM
-! Last update on Dec 10, 2020 10:00 AM
+! Last update on May 20, 2021 11:00 AM
 !
 ! Module to allocate and initialize global variable(s)
 !------------------------------------------------------------------------------------
@@ -124,7 +124,7 @@ contains
         allocate( oS3M_Vars(iID)%a2dChangeThickness (iRows, iCols) ) 
         
         allocate( oS3M_Vars(iID)%a2dTaC_MeanDays1   (iRows, iCols) )   
-        allocate( oS3M_Vars(iID)%a2dTaC_MeanDays10  (iRows, iCols) ) 
+        allocate( oS3M_Vars(iID)%a2dTaC_MeanDaysSuppressMelt  (iRows, iCols) ) 
         
         ! Finish to allocate dynamic variable(s)
         call mprintf(.true., iINFO_Main, ' Allocating dynamic variable(s) ... OK')
@@ -242,7 +242,7 @@ contains
         oS3M_Vars(iID)%a2dChangeThickness = 0.0
         
         oS3M_Vars(iID)%a2dTaC_MeanDays1 = 0.0 
-        oS3M_Vars(iID)%a2dTaC_MeanDays10 = 0.0          
+        oS3M_Vars(iID)%a2dTaC_MeanDaysSuppressMelt = 0.0          
         
         ! Finish to initialize dynamic variable(s)
         call mprintf(.true., iINFO_Main, ' Initialize dynamic variable(s) ... OK ')

@@ -9,11 +9,11 @@
 ! S3M
 !***********************************************************************************
 !
-! brief		S3M Snow Multidata Mapping and Modeling (Boni et al. 2010, Avanzi et al. in prep)
+! brief		S3M Snow Multidata Mapping and Modeling (Boni et al. 2010, Avanzi et al. 2021)
 !
 ! history	FRANCESCO AVANZI (CIMAFOUNDATION) 
-!+ 		23/10/2020
-!+		v5p1r0
+!+ 		21/05/2021
+!+		v5p1r1
 !
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -41,7 +41,7 @@
 ! 4) Snow age, albedo, melt, and snowpack runoff
 ! 5) Ice thickness.
 
-! S3M 5.1 is distributed through the CIMA Research Foundation - Department of Hydrology and Hydraulics GitHub repo at
+! S3M 5.1.1 is distributed through the CIMA Research Foundation - Department of Hydrology and Hydraulics GitHub repo at
 ! https://github.com/c-hydro 
 ! A complete manual regarding model installation, run, as well as pre- and post-processing is currently under development. 
 ! 

@@ -1,6 +1,6 @@
 !------------------------------------------------------------------------------------------    
 ! File:   S3M_Module_Data_Updating_Gridded.f90
-! Author(s): Fabio Delogu, Francesco Avanzi.
+! Author(s): Fabio Delogu, Valerio Basso, Francesco Avanzi.
 !
 ! Created on December 19, 2017, 1:19 PM
 ! Last update on October 26, 2020 12:00 PM

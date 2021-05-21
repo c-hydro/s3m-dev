@@ -72,15 +72,15 @@ iScaleFactor_SWEass = 10
 
 ! TIME INFO -------------------------------------------------------------------------------------
 ! Start time (yyyymmddHHMM format)
-sTimeStart = 201609010000
+sTimeStart = 201709010000
 ! Re-start time (yyyymmddHHMM format)
-sTimeRestart = 201608312300
+sTimeRestart = 201708312300
 ! -----------------------------------------------------------------------------------------------
 
 ! PATH(S) INFO ----------------------------------------------------------------------------------
 ! DATA STATIC
 ! Static gridded data path [Variable(s) --> DEM, CN]
-sPathData_Static_Gridded = '/home/'
+sPathData_Static_Gridded = '/home/Terrain/'
 
 ! DATA DYNAMIC
 ! Forcing gridded data path [Variable(s) --> Rain, AirTemperature, IncRadiation, RelHumidity]
@@ -93,7 +93,7 @@ sPathData_Updating_Gridded = '/home/$yyyy/$mm/$dd/'
 sPathData_Output_Gridded = '/home/$yyyy/$mm/$dd/'
 
 ! Restart gridded data path
-sPathData_Restart_Gridded = '/home/'
+sPathData_Restart_Gridded = '/home/Restart_240/'
 
 ! SWE assimilation gridded data path [Variable(s) --> SWE coming from external source, ex. ARPA VdA]
 sPathData_SWE_Assimilation_Gridded = '/home/$yyyy/$mm/$dd/'
@@ -132,8 +132,10 @@ dRefreezingSc = 1.0
 dModFactorRadS = 1.125
 ! Starting month for the water year [-, two digits since it's read as string!] 
 sWYstart = 09
-! Glacier-debris threshold [-, threshold for applying debris correction ] 
+! Glacier-debris threshold [-, threshold for applying debris correction] 
 dDebrisThreshold = 0.2
+! Temporal window for computing average temperature and suppress melt [days]
+iDaysAvgTSuppressMelt = 10
 ! -----------------------------------------------------------------------------------------------
 
 /
@@ -168,11 +170,11 @@ dRhoW = 1000
 
 ! INFO MODEL ------------------------------------------------------------------------------------
 ! Release version     (x.x.x)
-sReleaseVersion = '5.1.0'
+sReleaseVersion = '5.1.1'
 ! Author(s)         (Surname N.)
 sAuthorNames = 'Avanzi F., Gabellani S., Delogu F., Silvestro F.'
 ! Release Date      (yyyy/mm/dd)
-sReleaseDate = '2021/03/23'
+sReleaseDate = '2021/05/21'
 ! -----------------------------------------------------------------------------------------------
 
 /

@@ -56,6 +56,7 @@ contains
         integer(kind = 4)       :: iFlagGrid
         integer(kind = 4)       :: iFlagOutputMode
         integer(kind = 4)       :: iFlagAssOnlyPos
+        integer(kind = 4)       :: iDaysAvgTSuppressMelt
 
         logical                 :: bGridCheck
 
@@ -141,7 +142,7 @@ contains
         namelist /S3M_Snow/             a1dArctUp, a1dAltRange, &
                                         iGlacierValue, dRhoSnowFresh, dRhoSnowMax, dRhoSnowMin, dSnowQualityThr, &
                                         dMeltingTRef, dIceMeltingCoeff, iSWEassInfluence, dWeightSWEass, dRefreezingSc, &
-                                        dModFactorRadS, sWYstart, dDebrisThreshold
+                                        dModFactorRadS, sWYstart, dDebrisThreshold, iDaysAvgTSuppressMelt
                                        
         namelist /S3M_Constants/        dRhoW
                                         
@@ -188,7 +189,7 @@ contains
         iGlacierValue = -9999; dRhoSnowFresh = -9999.0; dRhoSnowMax = -9999.0; dRhoSnowMin = -9999.0; 
         dSnowQualityThr = -9999.0; dMeltingTRef = -9999.0; dIceMeltingCoeff = -9999.0;
         iSWEassInfluence = 0; dWeightSWEass = -9999.0; dRefreezingSc = -9999.0; dModFactorRadS = -9999.0;
-        dDebrisThreshold = -9999;
+        dDebrisThreshold = -9999; iDaysAvgTSuppressMelt = -9999;
         
         dRhoW = -9999.0;
         
@@ -333,6 +334,7 @@ contains
         oS3M_Namelist_Init%dRefreezingSc    = dRefreezingSc
         oS3M_Namelist_Init%dModFactorRadS   = dModFactorRadS
         oS3M_Namelist_Init%dDebrisThreshold   = dDebrisThreshold
+        oS3M_Namelist_Init%iDaysAvgTSuppressMelt = iDaysAvgTSuppressMelt
         
         ! Time, dt and step(s) info
         oS3M_Namelist_Init%iSimLength       = iSimLength

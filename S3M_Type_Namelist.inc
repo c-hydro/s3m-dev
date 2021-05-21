@@ -32,6 +32,7 @@ TYPE S3M_Type_Namelist
     integer(kind = 4), allocatable,         dimension(:) :: a1iDimsForcing
     integer(kind = 4)       :: iFlagOutputMode
     integer(kind = 4)       :: iFlagAssOnlyPos
+    integer(kind = 4)       :: iDaysAvgTSuppressMelt
     
     ! Real
     real(kind = 4)          :: dXLLCornerL, dYLLCornerL

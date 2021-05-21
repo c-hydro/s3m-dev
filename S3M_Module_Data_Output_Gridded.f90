@@ -3,7 +3,7 @@
 ! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Francesco Avanzi
 !
 ! Created on May 6, 2015, 4:36 PM
-! Last update on November 16, 2020 04:45 PM
+! Last update on May 20, 2021 11:00 AM
 !
 ! Module to save output results (only NC is supported!!!).
 !------------------------------------------------------------------------------------------
@@ -46,7 +46,7 @@ module S3M_Module_Data_Output_Gridded
                                             S3M_Tools_Generic_RemoveFile, &
                                             transpose3Dvar
     
-    use S3M_Module_Tools_Time,      only:   S3M_Tools_Time_DateDiff
+    use S3M_Module_Tools_Time,      only:   S3M_Tools_Time_DateDiff, S3M_Tools_Time_Printer
     
     use gnufor2 
     
@@ -97,7 +97,7 @@ contains
                                                                                                 a2dVarOutflow, & 
                                                                                                 a2dVarReff, &
                                                                                                 a2dVarIceThick, &
-                                                                                                a2dVarTaC_MeanDays10
+                                                                                                a2dVarTaC_MeanDaysSuppressMelt
                                                                                                 
         real(kind = 4), dimension(iRowsEnd - iRowsStart + 1, iColsEnd - iColsStart + 1, iDaySteps)   :: a3dVarTaC_1Days
 
@@ -112,7 +112,7 @@ contains
         a2dVarSWE = -9999; a2dVarRhoS = -9999; a2dVarH_S = -9999; a2dVarRhoS0 = -9999;
         a2dVarSnowMask = -9999; a2dVarMeltingS = -9999; a2dVarMeltingSDayCum = -9999; a2dVarRefreezingS = -9999;
         a2dVarAlbedoS = -9999; a2dVarMeltingG = -9999; a2dVarMeltingGCumWY = -9999.0; a2iVarAgeS = 0;
-        a2dVarTaC_MeanDays10 = -9999.0; a2dVarChangeThickness = -9999.0;
+        a2dVarTaC_MeanDaysSuppressMelt = -9999.0; a2dVarChangeThickness = -9999.0;
         a2dVarOutflow = -9999; a2dVarReff = -9999; 
         a2dVarIceThick = -9999; 
         
@@ -197,7 +197,7 @@ contains
         
         !MISCELLANEOUS
         a3dVarTaC_1Days = oS3M_Vars(iID)%a3dTaC_Days1
-        a2dVarTaC_MeanDays10 = oS3M_Vars(iID)%a2dTaC_MeanDays10
+        a2dVarTaC_MeanDaysSuppressMelt = oS3M_Vars(iID)%a2dTaC_MeanDaysSuppressMelt
      
         !------------------------------------------------------------------------------------------
 
@@ -213,7 +213,7 @@ contains
                                 a2dVarSWE, a2dVarRhoS, a2dVarH_S, a2dVarRhoS0, a2dVarSnowMask, &
                                 a2dVarMeltingS, a2dVarMeltingSDayCum, a2dVarRefreezingS, a2dVarAlbedoS, &
                                 a2dVarMeltingG, a2dVarMeltingGCumWY, a2dVarChangeThickness, a2iVarAgeS, &
-                                a2dVarTaC_MeanDays10, &
+                                a2dVarTaC_MeanDaysSuppressMelt, &
                                 a2dVarOutflow, a2dVarReff, &
                                 a2dVarIceThick, &
                                 a2dVarLat, a2dVarLon, a3dVarTaC_1Days, &
@@ -241,7 +241,7 @@ contains
                                           a2dVarSWE, a2dVarRhoS, a2dVarH_S, a2dVarRhoS0, a2dVarSnowMask, &
                                           a2dVarMeltingS, a2dVarMeltingSDayCum, a2dVarRefreezingS, a2dVarAlbedoS, &
                                           a2dVarMeltingG, a2dVarMeltingGCumWY, a2dVarChangeThickness, a2iVarAgeS, &
-                                          a2dVarTaC_MeanDays10, &
+                                          a2dVarTaC_MeanDaysSuppressMelt, &
                                           a2dVarOutflow, a2dVarReff, &
                                           a2dVarIceThick, &
                                           a2dVarLat, a2dVarLon, a3dVarTaC_1Days, &
@@ -258,6 +258,8 @@ contains
         character(len = 256)                    :: sVarGridMap, sVarDescription, sVarCoords
         character(len = 256)                    :: sVarUnits
         character(len = 2)                      :: sWYstart
+        character(len=10)                       :: sDateProcessing
+        character(len=12)                       :: sTimeProcessing
         integer(kind = 4), intent(in)           :: iRows, iCols
         
         integer(kind = 4)                       :: iTime, iDaySteps, iFlagIceMassBalance, iTimeStep, iFlagOutputMode
@@ -286,7 +288,7 @@ contains
         !SNOWMELT AND REFREEZING
         real(kind = 4), dimension(iRows, iCols), intent(in)         :: a2dVarMeltingS, a2dVarMeltingSDayCum, &
                                                                        a2dVarRefreezingS, a2dVarMeltingG, a2dVarAlbedoS, &
-                                                                       a2dVarTaC_MeanDays10
+                                                                       a2dVarTaC_MeanDaysSuppressMelt
         integer(kind = 4), dimension(iRows, iCols), intent(in)      :: a2iVarAgeS
 
         !SNOW HYDRAULICS
@@ -350,6 +352,11 @@ contains
         call check( nf90_def_dim(iFileID, "Y", iRows, iID_Dim_Rows) )
         call check( nf90_def_dim(iFileID, "X", iCols, iID_Dim_Cols) )
         !------------------------------------------------------------------------------------------
+        
+        !------------------------------------------------------------------------------------------
+        ! Get time now
+        call S3M_Tools_Time_Printer(sDateProcessing, sTimeProcessing)
+        !------------------------------------------------------------------------------------------        
 
         !------------------------------------------------------------------------------------------
         ! Global attribute(s)
@@ -361,6 +368,7 @@ contains
         call check( nf90_put_att(iFileID, NF90_GLOBAL, "ycellsize", dVarCellSizeY) )
         call check( nf90_put_att(iFileID, NF90_GLOBAL, "nrows", iRows) )        
         call check( nf90_put_att(iFileID, NF90_GLOBAL, "ncols", iCols) )
+        call check( nf90_put_att(iFileID, NF90_GLOBAL, "processing time", (trim(sDateProcessing)//' '//trim(sTimeProcessing)) ) )
         !------------------------------------------------------------------------------------------
 
         !------------------------------------------------------------------------------------------
@@ -572,13 +580,13 @@ contains
                                  iCols, iRows, transpose(real(a2iVarAgeS)))  
 
         ! T 10 days
-        sVarName = 'T_10Days'; sVarNameLong = 'Average T 10 Days'; sVarDescription = 'avg T 10 days';
+        sVarName = 'T_SuppressMeltDays'; sVarNameLong = 'Average T SuppressMelt Days'; sVarDescription = 'avg T suppressmelt days';
         sVarUnits = 'C'; sVarGridMap = 'epsg:4326'; dVarMissingValue = -9E15;                
         sVarCoords = 'Longitude Latitude';
         call S3M_Tools_IO_Put2d_NC(iFileID, iID_Dim_Cols, iID_Dim_Rows, & 
                                  sVarName, sVarNameLong, sVarDescription, &
                                  sVarUnits, sVarCoords, sVarGridMap, dVarMissingValue, &
-                                 iCols, iRows, transpose(a2dVarTaC_MeanDays10))                                  
+                                 iCols, iRows, transpose(a2dVarTaC_MeanDaysSuppressMelt))                                  
         
         if ( (iFlagOutputMode .eq. 1)) then   
             

@@ -280,7 +280,8 @@ contains
                                                 a2dVarSWE_W, a2dVarRefreezingS, dVarRefreezingSc, & 
                                                 iFlagIceMassBalance, a2dVarIceThick_WE, a2dVarMeltingG, a2dVarMeltSIncRad, &
                                                 a2dVarMeltSTemp, a2dVarMeltGIncRad, a2dVarMeltGTemp, &
-                                                a2dVarTaC_MeanDays10, dVarModFactorRadS, a2dVarMeltingSRadc, iFlagGlacierDebris)
+                                                a2dVarTaC_MeanDaysSuppressMelt, dVarModFactorRadS, a2dVarMeltingSRadc, &
+                                                iFlagGlacierDebris)
         
         !------------------------------------------------------------------------------------------
         ! Variable(s) declaration 
@@ -300,7 +301,7 @@ contains
         real(kind = 4), dimension(iRows, iCols)         :: a2dVarAlbedoS, a2dVarMeltingS, a2dVarRefreezingS, a2dVarMeltingG, &
                                                            a2dVarMeltGIncRad, a2dVarMeltGTemp, &
                                                            a2dVarMeltSIncRad, a2dVarMeltSTemp, a2dVarGlacierDebris, &
-                                                           a2dVarTaC_MeanDays10
+                                                           a2dVarTaC_MeanDaysSuppressMelt
         real(kind = 4), dimension(iRows, iCols)         :: a2dVarSWE_D, a2dVarSWE_W     
         real(kind = 4), dimension(iRows, iCols)         :: a2dVarIceThick_WE   
         real(kind = 4), dimension(iRows, iCols)         :: a2dVarArctUp
@@ -325,8 +326,8 @@ contains
         !------------------------------------------------------------------------------------------
         ! Compute snow melting first coefficient
         where ( (a2dVarDem.ge.0.0) )
-            a2dVarMeltingSc = 0.598862*atan(0.27439*a2dVarTaC_MeanDays10 - 0.5988)-0.598862*3.14/2 + a2dVarArctUp 
-            a2dVarMeltingSRadc = 0.49338*atan(0.27439*a2dVarTaC_MeanDays10 - 0.5988) -0.49338*3.14/2 + dVarModFactorRadS
+            a2dVarMeltingSc = 0.598862*atan(0.27439*a2dVarTaC_MeanDaysSuppressMelt - 0.5988)-0.598862*3.14/2 + a2dVarArctUp 
+            a2dVarMeltingSRadc = 0.49338*atan(0.27439*a2dVarTaC_MeanDaysSuppressMelt - 0.5988) -0.49338*3.14/2 + dVarModFactorRadS
         endwhere
         
         ! Melting coefficient lower limit
@@ -346,7 +347,7 @@ contains
         !------------------------------------------------------------------------------------------
         ! Compute snow melting
         where ( (a2dVarDem.ge.0.0) .and. (a2dVarTa.ge.dVarMeltingTRef) &
-                .and. (a2dVarSWE_D.gt.0.0) .and. (a2dVarTaC_MeanDays10.ge.dVarMeltingTRef) )
+                .and. (a2dVarSWE_D.gt.0.0) .and. (a2dVarTaC_MeanDaysSuppressMelt.ge.dVarMeltingTRef) )
                 
             a2dVarMeltSIncRad = (1000.0/(dVarRhoW*dVarLamba))*((a2dVarIncRad*(1.0 - a2dVarAlbedoS))*(iDtForcing)/1000000)
             ! Assuming a2dVarIncRad is in W/m2 and iDtForcing is in seconds, then a2dVarIncRad is first converted 

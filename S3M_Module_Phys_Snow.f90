@@ -53,6 +53,7 @@ contains
         integer(kind = 4)   :: iDaySteps, iDaySteps1Days, iTime, iDtDataForcing, iDt, iHour 
         integer(kind = 4)   :: iGlacierValue 
         integer(kind = 4)   :: iFlagSnowAssim, iFlagSnowAssim_SWE, iFlagIceMassBalance, iFlagGlacierDebris, iFlagAssOnlyPos
+        integer(kind = 4)   :: iDaysAvgTSuppressMelt 
         
         real(kind = 4)      :: dVarRhoW 
         real(kind = 4)      :: dVarMeltingTRef, dVarIceMeltingCoeff, dVarRefreezingSc, dVarModFactorRadS
@@ -93,7 +94,7 @@ contains
         real(kind = 4), dimension(iRows, iCols)         :: a2dVarMeltSIncRad, a2dVarMeltSTemp, a2dVarMeltGIncRad, a2dVarMeltGTemp        
         real(kind = 4), dimension(iRows, iCols)         :: a2dVarRefreezingS, a2dVarAlbedoS        
         real(kind = 4), dimension(iRows, iCols)         :: a2dVarTaC_MeanDays1, &
-                                                           a2dVarTaC_MeanDays10
+                                                           a2dVarTaC_MeanDaysSuppressMelt
         !variables: snow hydraulics    
         real(kind = 4), dimension(iRows, iCols)         :: a2dVarOutflow, a2dVarSSA, a2dVarPerm, a2dVarReff, &
                                                            a2dVarOutflow_ExcessRain, a2dVarOutflow_ExcessMelt, a2dVarOutflow_K
@@ -133,7 +134,7 @@ contains
         dVarRefreezingSc = -9999.0; dVarModFactorRadS = -9999.0;
         a2dVarRefreezingS = 0;
         a2dVarMeltingG = 0;
-        a2dVarTaC_MeanDays1 = -9999.0; a2dVarTaC_MeanDays10 = -9999.0;
+        a2dVarTaC_MeanDays1 = -9999.0; a2dVarTaC_MeanDaysSuppressMelt = -9999.0;
         a2dVarMeltSIncRad = 0.0; a2dVarMeltSTemp = 0.0; a2dVarMeltGIncRad = 0.0; a2dVarMeltGTemp = 0.0;
         ! Variables: snow hydraulics   
         a2dVarOutflow = 0; a2dVarSSA = -9999.0; a2dVarPerm = -9999.0; a2dVarReff = 0.0;
@@ -164,6 +165,7 @@ contains
         dVarIceMeltingCoeff = oS3M_Namelist(iID)%dIceMeltingCoeff 
         dVarRefreezingSc = oS3M_Namelist(iID)%dRefreezingSc 
         dVarModFactorRadS = oS3M_Namelist(iID)%dModFactorRadS
+        iDaysAvgTSuppressMelt = oS3M_Namelist(iID)%iDaysAvgTSuppressMelt        
         
         ! Time
         iDaySteps1Days = oS3M_Namelist(iID)%iDaySteps ! Define days steps [-]
@@ -224,7 +226,7 @@ contains
         a2dVarMeltingSDayCum = oS3M_Vars(iID)%a2dMeltingDayCum 
         a2dVarSnowFallDayCum = oS3M_Vars(iID)%a2dSnowFallDayCum 
         a2dVarAlbedoS = oS3M_Vars(iID)%a2dAlbedo_Snow  
-        a2dVarTaC_MeanDays10 = oS3M_Vars(iID)%a2dTaC_MeanDays10
+        a2dVarTaC_MeanDaysSuppressMelt = oS3M_Vars(iID)%a2dTaC_MeanDaysSuppressMelt
         a2dVarMeltingGCumWY = oS3M_Vars(iID)%a2dMeltingGCumWY
         
         ! Check ice melting flag and variable(s)
@@ -414,11 +416,12 @@ contains
         !-----------------------------------------------------------------------------------------     
                                     
         !-----------------------------------------------------------------------------------------     
-        ! We now compute average temperature over the last 10 days...
+        ! We now compute average temperature over the last iDaysAvgTSuppressMelt days...
         where( (a2dVarDem.ge.0.0) )
-            a2dVarTaC_MeanDays10 = & 
-                    (a2dVarTaC_MeanDays10*(iDaySteps1Days*10 - 1) + a2dVarTa)/(iDaySteps1Days*10)
-                    !We subtract - 1 from iDaySteps1Days*10 here to exclude the current timestep, which has T = a2dVarTa             
+            a2dVarTaC_MeanDaysSuppressMelt = & 
+                    (a2dVarTaC_MeanDaysSuppressMelt*(iDaySteps1Days*iDaysAvgTSuppressMelt - 1) &
+                    + a2dVarTa)/(iDaySteps1Days*iDaysAvgTSuppressMelt)
+        !We subtract - 1 from iDaySteps1Days*iDaysAvgTSuppressMelt here to exclude the current timestep, which has T = a2dVarTa             
         endwhere   
         !------------------------------------------------------------------------------------- 
         
@@ -443,7 +446,8 @@ contains
                                                 a2dVarSWE_W, a2dVarRefreezingS, dVarRefreezingSc, & 
                                                 iFlagIceMassBalance, a2dVarIceThick_WE, a2dVarMeltingG,  a2dVarMeltSIncRad, &
                                                 a2dVarMeltSTemp, a2dVarMeltGIncRad, a2dVarMeltGTemp, &
-                                                a2dVarTaC_MeanDays10, dVarModFactorRadS, a2dVarMeltingSRadc, iFlagGlacierDebris)                            
+                                                a2dVarTaC_MeanDaysSuppressMelt, dVarModFactorRadS, a2dVarMeltingSRadc, &
+                                                iFlagGlacierDebris)                            
         !-------------------------------------------------------------------------------------
         
         !-------------------------------------------------------------------------------------
@@ -1055,7 +1059,7 @@ contains
             a2dVarMeltingG = -9999; 
             a2dVarRefreezingS = -9999;
             a2dVarAlbedoS = -9999; a2iVarAgeS = -9999; 
-            a2dVarTaC_MeanDays1 = -9999.0; a2dVarTaC_MeanDays10 = -9999.0;
+            a2dVarTaC_MeanDays1 = -9999.0; a2dVarTaC_MeanDaysSuppressMelt = -9999.0;
             a2dVarMeltSIncRad = -9999.0; a2dVarMeltSTemp = -9999.0; a2dVarMeltGIncRad = -9999.0; a2dVarMeltGTemp = -9999.0;
             a2dVarMeltingSc = -9999.0; a2dVarMeltingSRadc = -9999.0;
             
@@ -1187,7 +1191,7 @@ contains
         oS3M_Vars(iID)%a2dMeltSTemp = a2dVarMeltSTemp 
         oS3M_Vars(iID)%a2dMeltGIncRad = a2dVarMeltGIncRad 
         oS3M_Vars(iID)%a2dMeltGTemp = a2dVarMeltGTemp         
-        oS3M_Vars(iID)%a2dTaC_MeanDays10 = a2dVarTaC_MeanDays10
+        oS3M_Vars(iID)%a2dTaC_MeanDaysSuppressMelt = a2dVarTaC_MeanDaysSuppressMelt
         oS3M_Vars(iID)%a2dMeltingSRadc = a2dVarMeltingSRadc
         
         ! SNOW HYDRAULICS

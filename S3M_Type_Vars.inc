@@ -90,7 +90,7 @@ TYPE S3M_Type_Vars
     real(kind = 4), allocatable,     dimension(:, :)     :: a2dChangeThickness
     
     real(kind = 4), allocatable,     dimension(:, :)     :: a2dTaC_MeanDays1
-    real(kind = 4), allocatable,     dimension(:, :)     :: a2dTaC_MeanDays10
+    real(kind = 4), allocatable, dimension(:, :) :: a2dTaC_MeanDaysSuppressMelt
     
     ! Time-Series variable(s)
     logical                             :: bFileForcingTimeSeries

@@ -85,7 +85,7 @@ contains
                                                                                                 a2dVarAlbedoS, &
                                                                                                 a2dVarIceThick, &
                                                                                                 a2dVarMeltingGCumWY, &
-                                                                                                a2dVarTaC_MeanDays10, &
+                                                                                                a2dVarTaC_MeanDaysSuppressMelt, &
                                                                                                 a2dVarSnowFallDayCum, &
                                                                                                 a2dVarMeltingSDayCum
            
@@ -100,7 +100,7 @@ contains
         
         a2iVarAgeS = 0; a2dVarSWE_D = 0.0; a2dVarRho_D = 0.0; a2dVarSWE_W = 0.0; a2dVarSWE = 0.0
         a3dVarTaC_1Days = 0.0; a2dVarIceThick = 0.0; a2dVarMeltingGCumWY = 0.0;
-        a2dVarAlbedoS = 0.0; a2dVarTaC_MeanDays10 = 0.0;
+        a2dVarAlbedoS = 0.0; a2dVarTaC_MeanDaysSuppressMelt = 0.0;
         a2dVarSnowFallDayCum = 0.0; a2dVarMeltingSDayCum = 0.0;
         !------------------------------------------------------------------------------------------
         
@@ -146,7 +146,7 @@ contains
                                         iDaySteps, &
                                         sTime, &
                                         a2iVarAgeS, a2dVarSWE_D, a2dVarRho_D, a2dVarSWE_W, a2dVarSWE, a2dVarAlbedoS, &
-                                        a3dVarTaC_1Days, a2dVarTaC_MeanDays10, &
+                                        a3dVarTaC_1Days, a2dVarTaC_MeanDaysSuppressMelt, &
                                         a2dVarLat, a2dVarLon, a2dVarIceThick, a2dVarMeltingGCumWY, iFlagIceMassBalance, &
                                         a2dVarMeltingSDayCum, a2dVarSnowFallDayCum)
 
@@ -164,7 +164,7 @@ contains
                 a2dVarIceThick = -9999
                 a2dVarMeltingGCumWY = -9999
                 a2dVarAlbedoS = -9999
-                a2dVarTaC_MeanDays10 = -9999
+                a2dVarTaC_MeanDaysSuppressMelt = -9999
                 a2dVarMeltingSDayCum = -9999
                 a2dVarSnowFallDayCum = -9999
             endwhere
@@ -185,7 +185,7 @@ contains
             
             oS3M_Vars(iID)%a3dTaC_Days1 = a3dVarTaC_1Days
             oS3M_Vars(iID)%a2dAlbedo_Snow = a2dVarAlbedoS
-            oS3M_Vars(iID)%a2dTaC_MeanDays10 = a2dVarTaC_MeanDays10
+            oS3M_Vars(iID)%a2dTaC_MeanDaysSuppressMelt = a2dVarTaC_MeanDaysSuppressMelt
             oS3M_Vars(iID)%a2dMeltingDayCum = a2dVarMeltingSDayCum
             oS3M_Vars(iID)%a2dSnowFallDayCum = a2dVarSnowFallDayCum           
             
@@ -224,8 +224,8 @@ contains
             call mprintf(.true., iINFO_Extra, checkvar(oS3M_Vars(iID)%a2dMeltingGCumWY, &
                                                                             oS3M_Vars(iID)%a2iMask, 'MELTING G CUM WY END') )
             call mprintf(.true., iINFO_Extra, checkvar(oS3M_Vars(iID)%a3dTaC_Days1(:,:,1), oS3M_Vars(iID)%a2iMask, 'TA 1DAYS END') )
-            call mprintf(.true., iINFO_Extra, checkvar(oS3M_Vars(iID)%a2dTaC_MeanDays10, & 
-                                                                                    oS3M_Vars(iID)%a2iMask, 'TA AVG 10DAYS END') )                            
+            call mprintf(.true., iINFO_Extra, checkvar(oS3M_Vars(iID)%a2dTaC_MeanDaysSuppressMelt, & 
+                                                                            oS3M_Vars(iID)%a2iMask, 'TA AVG SUPPRESSMELT END') )                            
             call mprintf(.true., iINFO_Extra, checkvar(oS3M_Vars(iID)%a2dMeltingDayCum, oS3M_Vars(iID)%a2iMask, 'MELTCUM END') )
             call mprintf(.true., iINFO_Extra, checkvar(oS3M_Vars(iID)%a2dSnowFallDayCum, oS3M_Vars(iID)%a2iMask, 'SNOWFCUM END') )            
             call mprintf(.true., iINFO_Extra, '')
@@ -245,7 +245,7 @@ contains
                                            iDaySteps, &
                                            sTime, &
                                            a2iVarAgeS, a2dVarSWE_D, a2dVarRho_D, a2dVarSWE_W, a2dVarSWE, a2dVarAlbedoS, &
-                                           a3dVarTaC_1Days, a2dVarTaC_MeanDays10, &
+                                           a3dVarTaC_1Days, a2dVarTaC_MeanDaysSuppressMelt, &
                                            a2dVarLat, a2dVarLon, a2dVarIceThick, a2dVarMeltingGCumWY, iFlagIceMassBalance, &
                                            a2dVarMeltingSDayCum, a2dVarSnowFallDayCum)
         !------------------------------------------------------------------------------------------
@@ -270,7 +270,7 @@ contains
                                                                                   a2dVarSWE, a2dVarAlbedoS
         real(kind = 4), dimension(iRows, iCols, iDaySteps),     intent(out)    :: a3dVarTaC_1Days
         real(kind = 4), dimension(iRows, iCols),                intent(out)    :: a2dVarIceThick, a2dVarMeltingGCumWY
-        real(kind = 4), dimension(iRows, iCols),                intent(out)    :: a2dVarTaC_MeanDays10, &
+        real(kind = 4), dimension(iRows, iCols),                intent(out)    :: a2dVarTaC_MeanDaysSuppressMelt, &
                                                                                   a2dVarMeltingSDayCum, &
                                                                                   a2dVarSnowFallDayCum                   
        
@@ -291,7 +291,7 @@ contains
         !------------------------------------------------------------------------------------------
         ! Initialize variable(s)
         a2iVarAgeS = -9999; a2dVarSWE_D = -9999.0; a2dVarRho_D = -9999.0; a2dVarSWE_W = -9999.0; a2dVarSWE = -9999.0
-        a3dVarTaC_1Days = -9999.0; a2dVarTaC_MeanDays10 = -9999.0; a2dVarAlbedoS = -9999
+        a3dVarTaC_1Days = -9999.0; a2dVarTaC_MeanDaysSuppressMelt = -9999.0; a2dVarAlbedoS = -9999
         a2dVarIceThick = -9999.0; a2dVarMeltingGCumWY = 0; a2dVarMeltingSDayCum = -9999; a2dVarSnowFallDayCum = -9999;
         a2dVarLat = -9999.0; a2dVarLon = -9999.0;
         
@@ -431,16 +431,16 @@ contains
                     a1bVarCheckS(4) = .true.
                 endif
                 
-                ! Air T avg 10 days
-                sVarName = 'T_10Days'
+                ! Air T avg SuppressMelt Days
+                sVarName = 'T_SuppressMeltDays'
                 call S3M_Tools_IO_Get2d_NC((sVarName), iFileID, a2dVar, sVarUnits, iCols, iRows, .false., iErr)
                 if(iErr /= 0) then
                     call mprintf(.true., iWARN, ' Get restart gridded data FAILED! '// &
                         'Snow physics is activated! If needed check restart data for '//sVarName//'!')
-                    a2dVarTaC_MeanDays10 = -9999.0;
+                    a2dVarTaC_MeanDaysSuppressMelt = -9999.0;
                     a1bVarCheckS(1) = .false.
                 else
-                    a2dVarTaC_MeanDays10 = transpose(a2dVar)
+                    a2dVarTaC_MeanDaysSuppressMelt = transpose(a2dVar)
                     a1bVarCheckS(1) = .true.
                 endif              
                     
@@ -551,7 +551,8 @@ contains
             endif
             
             call mprintf(.true., iINFO_Extra, checkvar(a2dVarMeltingGCumWY, oS3M_Vars(iID)%a2iMask, 'MELTING G CUM WY NC') )
-            call mprintf(.true., iINFO_Extra, checkvar(a2dVarTaC_MeanDays10, oS3M_Vars(iID)%a2iMask, 'TA AVG 10DAYS NC') )     
+            call mprintf(.true., iINFO_Extra, checkvar(a2dVarTaC_MeanDaysSuppressMelt, & 
+                                                        oS3M_Vars(iID)%a2iMask, 'TA AVG SUPPRESSMELTDAYS NC') )     
             call mprintf(.true., iINFO_Extra, checkvar(a2dVarMeltingSDayCum, oS3M_Vars(iID)%a2iMask, 'MELTCUM NC') )
             call mprintf(.true., iINFO_Extra, checkvar(a2dVarSnowFallDayCum, oS3M_Vars(iID)%a2iMask, 'SNOWFCUM NC') )             
             call mprintf(.true., iINFO_Extra, ' ========= CHECK FORCING GRIDDED NC =========== ')
