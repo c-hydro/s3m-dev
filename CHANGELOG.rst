@@ -2,6 +2,9 @@
 Changelog
 =========
 
+Version 5.1.2 (20210720)
+========================
+- Added a provision in S3M_Main.f90 to shift the frequency at which output file are dumped by iDtData_Forcing compared to iDtData_Output. In the typical scenario where iDtData_Output is 3600 s (1 h), this convenient feature makes sure that output files are saved 1 h before iDtData_Output (this guarantees that the useful 11PM file are saved and can be used as a restart).
 
 Version 5.1.1 (20210521)
 ========================

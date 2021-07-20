@@ -12,8 +12,8 @@
 ! brief		S3M Snow Multidata Mapping and Modeling (Boni et al. 2010, Avanzi et al. 2021)
 !
 ! history	FRANCESCO AVANZI (CIMAFOUNDATION) 
-!+ 		21/05/2021
-!+		v5p1r1
+!+ 		20/07/2021
+!+		v5p1r2
 !
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -162,11 +162,14 @@ program S3M_Main
     ! Time definition(s)                
     sTimeOld = oS3M_Namelist(iID)%sTimeStart
     sTimeForcing = oS3M_Namelist(iID)%sTimeStart
-    sTimeOutput = oS3M_Namelist(iID)%sTimeStart
+    !sTimeOutput = oS3M_Namelist(iID)%sTimeStart
     sTimeRestart = oS3M_Namelist(iID)%sTimeRestart
     sTimeUpdating = oS3M_Namelist(iID)%sTimeStart
     sTimeAssSWE = oS3M_Namelist(iID)%sTimeStart
     
+    call S3M_Tools_Time_GetNewDate(sTimeOutput, oS3M_Namelist(iID)%sTimeStart, &
+        nint(real(oS3M_Namelist(iID)%iDtData_Output - real(oS3M_Namelist(iID)%iDtData_Forcing))))
+
     ! Model dt(s)
     iDtModel = oS3M_Namelist(iID)%iDtModel
     iDtData_Forcing = oS3M_Namelist(iID)%iDtData_Forcing
