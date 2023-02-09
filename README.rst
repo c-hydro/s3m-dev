@@ -51,7 +51,8 @@ First, packages for C, C++, and Fortran programming languages must be installed 
 
   1) Tools --> Plugins --> Settings --> Tick "NetBeans 8.2 Plugin Portal" --> Close 
 
-and then reboot the Apache NetBeans IDE.
+and then reboot the Apache NetBeans IDE. 
+After rebooting, make sure you intall the relevant C/C++ plugin from the available ones.  
 Second, users should create a New Project following this path: 
 
   2) File --> New Project --> Categories :: Samples :: C/C++ --> Projects :: Fortran Hello World Application --> Next --> Choose Name --> Close
