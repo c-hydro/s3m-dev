@@ -3,7 +3,7 @@
 ! Author:   Francesco Avanzi, Fabio Delogu, Simone Gabellani.
 !
 ! Created on Jul 15, 2015 11:00 AM
-! Last update on October 26, 2020 03:16 PM
+! Last update on February 09, 2023 10:30 AM
 !
 ! Snow- and glacier-physics subroutine for S3M
 !------------------------------------------------------------------------------------
@@ -206,7 +206,7 @@ contains
 
         !-------------------------------------------------------------------------------------         
         !Re-initialize snowfall and melting cumulated variable(s)
-        if ( (sTime(12:13).eq.'00') .and. (iTime.gt.1) ) then
+        if ( (sTime(12:13).eq.'00') ) then
             ! Update cumulative daily variables
             oS3M_Vars(iID)%a2dMeltingDayCum = 0.0
             oS3M_Vars(iID)%a2dSnowFallDayCum = 0.0

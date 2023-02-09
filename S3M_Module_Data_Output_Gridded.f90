@@ -3,7 +3,7 @@
 ! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Francesco Avanzi
 !
 ! Created on May 6, 2015, 4:36 PM
-! Last update on May 20, 2021 11:00 AM
+! Last update on February 09, 2023 10:30 AM
 !
 ! Module to save output results (only NC is supported!!!).
 !------------------------------------------------------------------------------------------
@@ -474,18 +474,14 @@ contains
                              sVarUnits, sVarCoords, sVarGridMap, dVarMissingValue, &
                              iCols, iRows, transpose(a2dVarSWE_W))     
                                  
-        if ( (iFlagOutputMode .eq. 1)) then       
-
-            sVarName = 'Theta_W'; sVarNameLong = 'Bulk Vol. LWC'; sVarDescription = 'bulk vol. LWC';
-            sVarUnits = '-'; sVarGridMap = 'epsg:4326'; dVarMissingValue = -9E15;
-            sVarCoords = 'Longitude Latitude';
+        sVarName = 'Theta_W'; sVarNameLong = 'Bulk Vol. LWC'; sVarDescription = 'bulk vol. LWC';
+        sVarUnits = '-'; sVarGridMap = 'epsg:4326'; dVarMissingValue = -9E15;
+        sVarCoords = 'Longitude Latitude';
             call S3M_Tools_IO_Put2d_NC(iFileID, iID_Dim_Cols, iID_Dim_Rows, & 
                                  sVarName, sVarNameLong, sVarDescription, &
                                  sVarUnits, sVarCoords, sVarGridMap, dVarMissingValue, &
                                  iCols, iRows, transpose(a2dVarTheta_W))                              
                              
-        endif
-                                 
         !BULK SNOW 
         sVarName = 'SWE'; sVarNameLong = 'Snow Water Equivalent'; sVarDescription = 'total SWE';
         sVarUnits = 'mm'; sVarGridMap = 'epsg:4326'; dVarMissingValue = -9E15;
@@ -637,28 +633,30 @@ contains
                                  iCols, iRows, transpose(a2dVarChangeThickness))
                                  
         endif                             
-                  
-        ! Daily variable(s)     
-        if( sTime(12:13) .eq. '23' ) then
-                
-            ! Snow melting daily cumulated           
-            sVarName = 'MeltingSDayCum'; sVarNameLong = 'Daily Cumulative Snow Melt'; sVarDescription = 'daily cum snow melt';
-            sVarUnits = 'mm'; sVarGridMap = 'epsg:4326'; dVarMissingValue = -9E15;
-            sVarCoords = 'Longitude Latitude';
-            call S3M_Tools_IO_Put2d_NC(iFileID, iID_Dim_Cols, iID_Dim_Rows, & 
+
+        
+        ! Snow melting daily cumulated           
+        sVarName = 'MeltingSDayCum'; sVarNameLong = 'Daily Cumulative Snow Melt'; sVarDescription = 'daily cum snow melt';
+        sVarUnits = 'mm'; sVarGridMap = 'epsg:4326'; dVarMissingValue = -9E15;
+        sVarCoords = 'Longitude Latitude';
+        call S3M_Tools_IO_Put2d_NC(iFileID, iID_Dim_Cols, iID_Dim_Rows, & 
                                  sVarName, sVarNameLong, sVarDescription, &
                                  sVarUnits, sVarCoords, sVarGridMap, dVarMissingValue, &
                                  iCols, iRows, transpose(a2dVarMeltingSDayCum))
                                  
-            ! Snowfall daily cumulated                       
-            sVarName = 'SnowfallCum'; sVarNameLong = 'Daily Cumulative Snowfall'; sVarDescription = 'daily cum snowfall';
-            sVarUnits = 'mm'; sVarGridMap = 'epsg:4326'; dVarMissingValue = -9E15;
-            sVarCoords = 'Longitude Latitude';
-            call S3M_Tools_IO_Put2d_NC(iFileID, iID_Dim_Cols, iID_Dim_Rows, & 
+        ! Snowfall daily cumulated                       
+        sVarName = 'SnowfallCum'; sVarNameLong = 'Daily Cumulative Snowfall'; sVarDescription = 'daily cum snowfall';
+        sVarUnits = 'mm'; sVarGridMap = 'epsg:4326'; dVarMissingValue = -9E15;
+        sVarCoords = 'Longitude Latitude';
+        call S3M_Tools_IO_Put2d_NC(iFileID, iID_Dim_Cols, iID_Dim_Rows, & 
                                  sVarName, sVarNameLong, sVarDescription, &
                                  sVarUnits, sVarCoords, sVarGridMap, dVarMissingValue, &
-                                 iCols, iRows, transpose(a2dVarSnowFallDayCum))                                  
-                                 
+                                 iCols, iRows, transpose(a2dVarSnowFallDayCum))          
+        
+        
+        ! Daily variable(s)     
+        if( sTime(12:13) .eq. '23' ) then
+                
             ! Air temperature last 1 day(s)           
             sVarName = 'T_1Days'; sVarNameLong = 'Air Temperature Last 1 Day'; sVarDescription = 't_1days';
             sVarUnits = 'C'; sVarGridMap = 'epsg:4326'; dVarMissingValue = -9E15;

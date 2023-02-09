@@ -3,7 +3,7 @@
 ! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Francesco Avanzi.
 !
 ! Created on May 7, 2015, 1:27 PM
-! Last update on October 26, 2020 11:25 AM
+! Last update on February 09, 2023 10:30 AM
 !
 ! Module to read restart data.
 !------------------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ contains
            
         real(kind = 4), dimension(iRowsEnd - iRowsStart + 1, iColsEnd - iColsStart + 1, iDaySteps)      :: a3dVarTaC_1Days 
         
-        logical                     :: bFileExist
+        logical                     :: bFileExist, bCheckRestart
         !------------------------------------------------------------------------------------------
 
         !------------------------------------------------------------------------------------------
@@ -102,6 +102,8 @@ contains
         a3dVarTaC_1Days = 0.0; a2dVarIceThick = 0.0; a2dVarMeltingGCumWY = 0.0;
         a2dVarAlbedoS = 0.0; a2dVarTaC_MeanDaysSuppressMelt = 0.0;
         a2dVarSnowFallDayCum = 0.0; a2dVarMeltingSDayCum = 0.0;
+        
+        bCheckRestart = .false.;
         !------------------------------------------------------------------------------------------
         
         !------------------------------------------------------------------------------------------
@@ -148,8 +150,8 @@ contains
                                         a2iVarAgeS, a2dVarSWE_D, a2dVarRho_D, a2dVarSWE_W, a2dVarSWE, a2dVarAlbedoS, &
                                         a3dVarTaC_1Days, a2dVarTaC_MeanDaysSuppressMelt, &
                                         a2dVarLat, a2dVarLon, a2dVarIceThick, a2dVarMeltingGCumWY, iFlagIceMassBalance, &
-                                        a2dVarMeltingSDayCum, a2dVarSnowFallDayCum)
-
+                                        a2dVarMeltingSDayCum, a2dVarSnowFallDayCum, &
+                                        bCheckRestart)
                                         
             !------------------------------------------------------------------------------------------
                                             
@@ -169,31 +171,45 @@ contains
                 a2dVarSnowFallDayCum = -9999
             endwhere
             !------------------------------------------------------------------------------------------
-
-            !------------------------------------------------------------------------------------------
-            ! Pass variable(s) to global workspace
-            oS3M_Vars(iID)%a2dSWE_D = a2dVarSWE_D
-            oS3M_Vars(iID)%a2dRho_D = a2dVarRho_D 
-            oS3M_Vars(iID)%a2dSWE_W = a2dVarSWE_W
-            oS3M_Vars(iID)%a2dSWE = a2dVarSWE
             
-            if (oS3M_Namelist(iID)%iFlagThickFromTerrData .eq. 0) then
-                oS3M_Vars(iID)%a2dIceThick = a2dVarIceThick
+            !------------------------------------------------------------------------------------------
+            ! Check restart flag on data availability
+            call mprintf(.true., iINFO_Extra, ' Data :: Restart gridded for snow physics ... ' )
+            if (bCheckRestart .eqv. .true.) then
+                
+                !------------------------------------------------------------------------------------------
+                ! Pass variable(s) to global workspace
+                oS3M_Vars(iID)%a2dSWE_D = a2dVarSWE_D
+                oS3M_Vars(iID)%a2dRho_D = a2dVarRho_D 
+                oS3M_Vars(iID)%a2dSWE_W = a2dVarSWE_W
+                oS3M_Vars(iID)%a2dSWE = a2dVarSWE
+            
+                if (oS3M_Namelist(iID)%iFlagThickFromTerrData .eq. 0) then
+                    oS3M_Vars(iID)%a2dIceThick = a2dVarIceThick
+                endif
+            
+                oS3M_Vars(iID)%a2dMeltingGCumWY = a2dVarMeltingGCumWY
+            
+                oS3M_Vars(iID)%a3dTaC_Days1 = a3dVarTaC_1Days
+                oS3M_Vars(iID)%a2dAlbedo_Snow = a2dVarAlbedoS
+                oS3M_Vars(iID)%a2dTaC_MeanDaysSuppressMelt = a2dVarTaC_MeanDaysSuppressMelt
+                oS3M_Vars(iID)%a2dMeltingDayCum = a2dVarMeltingSDayCum
+                oS3M_Vars(iID)%a2dSnowFallDayCum = a2dVarSnowFallDayCum           
+                oS3M_Vars(iID)%a2iAge = a2iVarAgeS
+                
+                ! Info end
+                call mprintf(.true., iINFO_Extra, ' Data :: Restart gridded for snow physics ... OK' )
+                !------------------------------------------------------------------------------------------
+                
+            else
+                !------------------------------------------------------------------------------------------
+                ! Exit message for not using restart data
+                call mprintf(.true., iINFO_Verbose, ' Restart flag selected but problems with reading snow data')
+                ! Info end
+                call mprintf(.true., iINFO_Extra, ' Data :: Restart gridded for snow physics ... SKIPPED' )
+                !------------------------------------------------------------------------------------------
+                
             endif
-            
-            oS3M_Vars(iID)%a2dMeltingGCumWY = a2dVarMeltingGCumWY
-            
-            oS3M_Vars(iID)%a3dTaC_Days1 = a3dVarTaC_1Days
-            oS3M_Vars(iID)%a2dAlbedo_Snow = a2dVarAlbedoS
-            oS3M_Vars(iID)%a2dTaC_MeanDaysSuppressMelt = a2dVarTaC_MeanDaysSuppressMelt
-            oS3M_Vars(iID)%a2dMeltingDayCum = a2dVarMeltingSDayCum
-            oS3M_Vars(iID)%a2dSnowFallDayCum = a2dVarSnowFallDayCum           
-            
-            
-            ! Info end
-            call mprintf(.true., iINFO_Extra, ' Data :: Restart gridded ... OK' )
-            !------------------------------------------------------------------------------------------
-            
             !------------------------------------------------------------------------------------------  
             
         else
@@ -204,8 +220,9 @@ contains
             call mprintf(.true., iINFO_Extra, ' Data :: Restart gridded ... SKIPPED ' )
             !------------------------------------------------------------------------------------------
         endif
-        !------------------------------------------------------------------------------------------
-       
+        !------------------------------------------------------------------------------------------            
+
+        
         !------------------------------------------------------------------------------------------
         ! Debug
         if (iDEBUG.gt.0) then
@@ -247,7 +264,8 @@ contains
                                            a2iVarAgeS, a2dVarSWE_D, a2dVarRho_D, a2dVarSWE_W, a2dVarSWE, a2dVarAlbedoS, &
                                            a3dVarTaC_1Days, a2dVarTaC_MeanDaysSuppressMelt, &
                                            a2dVarLat, a2dVarLon, a2dVarIceThick, a2dVarMeltingGCumWY, iFlagIceMassBalance, &
-                                           a2dVarMeltingSDayCum, a2dVarSnowFallDayCum)
+                                           a2dVarMeltingSDayCum, a2dVarSnowFallDayCum, &
+                                           bCheckRestart)
         !------------------------------------------------------------------------------------------
         ! Variable(s)
         integer(kind = 4)                       :: iID                  
@@ -282,9 +300,8 @@ contains
         integer(kind = 4)       :: iFileID
         integer(kind = 4)       :: iFlagIceMassBalance
 
-        logical, dimension(7)   :: a1bVarCheckS
-                
-        logical                 :: bFileExist
+        logical                 :: bFileExist, bCheckRestart, bCheckVar
+        
         
         !------------------------------------------------------------------------------------------
         
@@ -294,8 +311,8 @@ contains
         a3dVarTaC_1Days = -9999.0; a2dVarTaC_MeanDaysSuppressMelt = -9999.0; a2dVarAlbedoS = -9999
         a2dVarIceThick = -9999.0; a2dVarMeltingGCumWY = 0; a2dVarMeltingSDayCum = -9999; a2dVarSnowFallDayCum = -9999;
         a2dVarLat = -9999.0; a2dVarLon = -9999.0;
-        
-        a1bVarCheckS = .false.;
+        bCheckRestart = .false.; 
+        bCheckVar = .true.;
         !------------------------------------------------------------------------------------------
         
         !------------------------------------------------------------------------------------------
@@ -326,6 +343,7 @@ contains
             call mprintf(.true., iWARN, ' No compressed restart netCDF data found: '//trim(sFileNameData_Restart_Zip) )
             call mprintf(.true., iINFO_Verbose, &
                          ' Get filename (restart gridded): '//trim(sFileNameData_Restart)//' ... FAILED' )
+            bCheckVar = .false.
             !------------------------------------------------------------------------------------------
         else
             !------------------------------------------------------------------------------------------
@@ -346,7 +364,7 @@ contains
                              trim(sFileNameData_Restart)//' --> Undefined restart data values' ) 
                 call mprintf(.true., iINFO_Verbose, &
                             ' Get filename (restart gridded): '//trim(sFileNameData_Restart)//' ... FAILED' )
-
+                bCheckVar = .false.
                 !------------------------------------------------------------------------------------------
                             
             else
@@ -360,10 +378,10 @@ contains
                     call mprintf(.true., iWARN, ' Get restart gridded data FAILED! '// &
                         'Snow physics is activated! If needed check restart data for '//sVarName//'!')
                     a2dVarSWE_D = -9999.0;
-                    a1bVarCheckS(1) = .false.
+                    bCheckVar = bCheckVar .and. .false. 
                 else
                     a2dVarSWE_D = transpose(a2dVar)
-                    a1bVarCheckS(1) = .true.
+                    bCheckVar = bCheckVar .and. .true. 
                 endif                
                 
                 ! RHO_D
@@ -373,10 +391,10 @@ contains
                     call mprintf(.true., iWARN, ' Get restart gridded data FAILED! '// &
                         'Snow physics is activated! If needed check restart data for '//sVarName//'!')
                     a2dVarRho_D = -9999.0;
-                    a1bVarCheckS(1) = .false.
+                    bCheckVar = bCheckVar .and. .false. 
                 else
                     a2dVarRho_D = transpose(a2dVar)
-                    a1bVarCheckS(1) = .true.
+                    bCheckVar = bCheckVar .and. .true. 
                 endif                 
                 
                 ! SWE_W
@@ -386,10 +404,10 @@ contains
                     call mprintf(.true., iWARN, ' Get restart gridded data FAILED! '// &
                         'Snow physics is activated! If needed check restart data for '//sVarName//'!')
                     a2dVarSWE_W = -9999.0;
-                    a1bVarCheckS(1) = .false.
+                    bCheckVar = bCheckVar .and. .false. 
                 else
                     a2dVarSWE_W = transpose(a2dVar)
-                    a1bVarCheckS(1) = .true.
+                    bCheckVar = bCheckVar .and. .true. 
                 endif                  
                 
                 ! SWE
@@ -399,12 +417,12 @@ contains
                     call mprintf(.true., iWARN, ' Get restart gridded data FAILED! '// &
                         'Snow physics is activated! If needed check restart data for '//sVarName//'!')
                     a2dVarSWE = -9999.0;
-                    a1bVarCheckS(1) = .false.
+                    bCheckVar = bCheckVar .and. .false. 
                 else
                     a2dVarSWE = transpose(a2dVar)
-                    a1bVarCheckS(1) = .true.
+                    bCheckVar = bCheckVar .and. .true. 
                 endif
-                   
+                  
                 ! Albedo
                 sVarName = 'AlbedoS'
                 call S3M_Tools_IO_Get2d_NC((sVarName), iFileID, a2dVar, sVarUnits, iCols, iRows, .false., iErr)
@@ -412,10 +430,10 @@ contains
                     call mprintf(.true., iWARN, ' Get restart gridded data FAILED! '// &
                         'Snow physics is activated! If needed check restart data for '//sVarName//'!')
                     a2dVarAlbedoS = -9999.0;
-                    a1bVarCheckS(1) = .false.
+                    bCheckVar = bCheckVar .and. .false. 
                 else
                     a2dVarAlbedoS = transpose(a2dVar)
-                    a1bVarCheckS(1) = .true.
+                    bCheckVar = bCheckVar .and. .true. 
                 endif            
                 
                 ! Snow age
@@ -425,10 +443,10 @@ contains
                     call mprintf(.true., iWARN, ' Get restart gridded data FAILED! '// &
                         'Snow physics is activated! If needed check restart data for '//sVarName//'!')
                     a2iVarAgeS = -9999;
-                    a1bVarCheckS(4) = .false.
+                    bCheckVar = bCheckVar .and. .false. 
                 else
                     a2iVarAgeS = int(transpose(a2dVar))
-                    a1bVarCheckS(4) = .true.
+                    bCheckVar = bCheckVar .and. .true. 
                 endif
                 
                 ! Air T avg SuppressMelt Days
@@ -438,10 +456,10 @@ contains
                     call mprintf(.true., iWARN, ' Get restart gridded data FAILED! '// &
                         'Snow physics is activated! If needed check restart data for '//sVarName//'!')
                     a2dVarTaC_MeanDaysSuppressMelt = -9999.0;
-                    a1bVarCheckS(1) = .false.
+                    bCheckVar = bCheckVar .and. .false. 
                 else
                     a2dVarTaC_MeanDaysSuppressMelt = transpose(a2dVar)
-                    a1bVarCheckS(1) = .true.
+                    bCheckVar = bCheckVar .and. .true. 
                 endif              
                     
                 ! Air temperature last 1 day(s) 
@@ -451,10 +469,10 @@ contains
                     call mprintf(.true., iWARN, ' Get restart gridded data FAILED! '// &
                        'Snow physics is activated! If needed check restart data for '//sVarName//'!')
                     a3dVarTaC_1Days = -9999.0;
-                    a1bVarCheckS(5) = .false.
+                    bCheckVar = bCheckVar .and. .false. 
                 else
                     a3dVarTaC_1Days = transpose3Dvar(a3dVar3)
-                    a1bVarCheckS(5) = .true.
+                    bCheckVar = bCheckVar .and. .true. 
                 endif
                 
                 if ( (iFlagIceMassBalance.eq.1.0) .or. (iFlagIceMassBalance.eq.2.0) ) then
@@ -468,10 +486,10 @@ contains
                             call mprintf(.true., iWARN, ' Get restart gridded data FAILED! '// &
                                 'Snow physics is activated! If needed check restart data for '//sVarName//'!')
                             a2dVarIceThick = -9999.0;
-                            a1bVarCheckS(7) = .false.
+                            bCheckVar = bCheckVar .and. .false. 
                         else
                             a2dVarIceThick = transpose(a2dVar)
-                            a1bVarCheckS(7) = .true.
+                            bCheckVar = bCheckVar .and. .true. 
                         endif
 
                     endif
@@ -483,10 +501,10 @@ contains
                         call mprintf(.true., iWARN, ' Get restart gridded data FAILED! '// &
                             'Snow physics is activated! If needed check restart data for '//sVarName//'!')
                         a2dVarMeltingGCumWY = 0.0;
-                        a1bVarCheckS(1) = .false.
+                        bCheckVar = bCheckVar .and. .false.                         
                     else
                         a2dVarMeltingGCumWY = transpose(a2dVar)
-                        a1bVarCheckS(1) = .true.
+                        bCheckVar = bCheckVar .and. .true. 
                     endif 
                     
                 endif
@@ -498,10 +516,10 @@ contains
                     call mprintf(.true., iWARN, ' Get restart gridded data FAILED! '// &
                         'Snow physics is activated! If needed check restart data for '//sVarName//'!')
                     a2dVarMeltingSDayCum = -9999.0;
-                    a1bVarCheckS(1) = .false.
+                    bCheckVar = bCheckVar .and. .false. 
                 else
                     a2dVarMeltingSDayCum = transpose(a2dVar)
-                    a1bVarCheckS(1) = .true.
+                    bCheckVar = bCheckVar .and. .true. 
                 endif 
                 
                 ! SnowFallDayCum
@@ -511,30 +529,43 @@ contains
                     call mprintf(.true., iWARN, ' Get restart gridded data FAILED! '// &
                         'Snow physics is activated! If needed check restart data for '//sVarName//'!')
                     a2dVarSnowFallDayCum = -9999.0;
-                    a1bVarCheckS(1) = .false.
+                    bCheckVar = bCheckVar .and. .false. 
                 else
                     a2dVarSnowFallDayCum = transpose(a2dVar)
-                    a1bVarCheckS(1) = .true.
+                    bCheckVar = bCheckVar .and. .true. 
                 endif                 
                 
                 
-                    ! Closing netcdf file (drops db)
-                    iErr = nf90_close(iFileID)
-                    !------------------------------------------------------------------------------------------
+                ! Closing netcdf file (drops db)
+                iErr = nf90_close(iFileID)
+                !------------------------------------------------------------------------------------------
                     
-                    !------------------------------------------------------------------------------------------
-                    ! Info filename
-                    call mprintf(.true., iINFO_Basic, ' Get filename (restart gridded): '//trim(sFileNameData_Restart)//' ... OK' )
-                    ! Info end
-                    call mprintf(.true., iINFO_Extra, ' Data :: Restart gridded :: NetCDF ... OK' )
-                    !------------------------------------------------------------------------------------------
+                !------------------------------------------------------------------------------------------
+                ! Info filename
+                call mprintf(.true., iINFO_Basic, ' Get filename (restart gridded): '//trim(sFileNameData_Restart)//' ... OK' )
+                ! Info end
+                call mprintf(.true., iINFO_Extra, ' Data :: Restart gridded :: NetCDF ... OK' )
+                !------------------------------------------------------------------------------------------
                 
             endif
             !------------------------------------------------------------------------------------------
             
         endif
         !------------------------------------------------------------------------------------------
-
+        
+        !------------------------------------------------------------------------------------------
+        ! Check restart
+        if (bCheckVar .eqv. .true.) then
+            call mprintf(.true., iINFO_Basic, ' Data :: Restart gridded :: NetCDF :: All variable(s) are loaded! ' )
+            bCheckRestart = .true.
+        else
+            call mprintf(.true., iINFO_Basic, ' Data :: Restart gridded :: NetCDF :: Some/All variable(s) are N/A! ' )
+            call mprintf(.true., iWARN, ' Restart flag activated but some data restart are not available! ')
+            call mprintf(.true., iWARN, ' Restart gridded conditions are null! ')
+            bCheckRestart = .false.
+        endif
+        !------------------------------------------------------------------------------------------
+        
         !------------------------------------------------------------------------------------------
         ! Debug
         if (iDEBUG.gt.0) then

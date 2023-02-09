@@ -7,7 +7,7 @@ Version="1.0.0"
 Date='2020/11/18'
 
 # Other option(s)
-Archive_Default="s3m_model-apps_codes_5.1.0.tar.gz"
+Archive_Default="s3m_model-apps_codes_5.2.0.tar.gz"
 # Default folder
 Lib_Dir_Deps_Default="$HOME/fp_libs_system"
 # Executables folder
@@ -15,7 +15,7 @@ Lib_Dir_Exec_Default="$Lib_Dir_Deps_Default/s3m"
 # Compilation Mode
 Lib_Building_Default=false
 # Executable name
-Exec_Default='S3M_Model_V5_1_0.x'
+Exec_Default='S3M_Model_V5_2_0.x'
 #-----------------------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------

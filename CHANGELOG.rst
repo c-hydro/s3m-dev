@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 5.2.0 (20230208)
+========================
+- Improved handling of restard data, with a more rigorous check on the existence of both file and NC layers to avoid spurious results
+- Extended number of output layers in the basic output mode to also include cumulative daily melt and snowfall at all hours, and LWC
+- Modified reset of cumulative daily melt and snowfall in S3M_Module_Phys_Snow
+
 Version 5.1.2 (20210720)
 ========================
 - Added a provision in S3M_Main.f90 to shift the frequency at which output file are dumped by iDtData_Forcing compared to iDtData_Output. In the typical scenario where iDtData_Output is 3600 s (1 h), this convenient feature makes sure that output files are saved 1 h before iDtData_Output (this guarantees that the useful 11PM file are saved and can be used as a restart).

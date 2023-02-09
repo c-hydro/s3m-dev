@@ -170,11 +170,11 @@ dRhoW = 1000
 
 ! INFO MODEL ------------------------------------------------------------------------------------
 ! Release version     (x.x.x)
-sReleaseVersion = '5.1.2'
+sReleaseVersion = '5.2.0'
 ! Author(s)         (Surname N.)
 sAuthorNames = 'Avanzi F., Gabellani S., Delogu F., Silvestro F.'
 ! Release Date      (yyyy/mm/dd)
-sReleaseDate = '2021/07/20'
+sReleaseDate = '2023/02/09'
 ! -----------------------------------------------------------------------------------------------
 
 /

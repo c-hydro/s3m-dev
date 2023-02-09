@@ -2,11 +2,11 @@
 ! S3M
 !***********************************************************************************
 !
-! brief		S3M Snow Multidata Mapping and Modeling (Boni et al. 2010, Avanzi et al. 2021)
+! brief		S3M Snow Multidata Mapping and Modeling (Boni et al. 2010, Avanzi et al. 2022)
 !
 ! history	FRANCESCO AVANZI (CIMAFOUNDATION) 
-!+ 		20/07/2021
-!+		v5p1r2
+!+ 		09/02/2023
+!+		v5p2r0
 !
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -14,7 +14,7 @@
 !-----------------------------------------------------------------------------------
 ! DESCRIPTION
 !-----------------------------------------------------------------------------------
-! CIMA Foundation's cryospheric model, mainly for hydrological applications.
+! CIMA Foundation's cryospheric model.
 ! S3M is a spatially distributed model combining several sources of data to estimate snowpack and glacier state.
 ! The snow component follows a one-layer, modified-degree-day approach and explicitly separates the dry and wet constituents of 
 ! snow (De Michele et al. 2013, Avanzi et al. 2015). Thus, it provides spatially explicitly estimates of all snowpack bulk 
@@ -34,14 +34,15 @@
 ! 4) Snow age, albedo, melt, and snowpack runoff
 ! 5) Ice thickness.
 
-! S3M 5.1.1 is distributed through the CIMA Research Foundation - Department of Hydrology and Hydraulics GitHub repo at
+! S3M 5.2.0 is distributed through the CIMA Research Foundation - Department of Hydrology and Hydraulics GitHub repo at
 ! https://github.com/c-hydro 
-! A complete manual regarding model installation, run, as well as pre- and post-processing is currently under development. 
+! A complete manual regarding model installation, run, as well as pre- and post-processing can be found at: 
+! https://gmd.copernicus.org/articles/15/4853/2022/
 ! 
 !-----------------------------------------------------------------------------------
 ! COMMAND LINE (example)
 !-----------------------------------------------------------------------------------
-! ./S3M_v5p1.x --> parameter(s): S3M_info_domain_DataDa_DataA.txt 
+! ./S3M_v5p2.x --> parameter(s): S3M_info_domain_DataDa_DataA.txt 
 !
 ! All compiling and debugging options for S3M are described at https://github.com/c-hydro/hmc-dev
 !
