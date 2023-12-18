@@ -1,8 +1,9 @@
 !------------------------------------------------------------------------------------------     
 ! File:   S3M_Module_Tools_Generic.f90
-! Author: Fabio Delogu.
+! Author: Fabio Delogu, Francesco Avanzi.
 !
 ! Created on March 24, 2014, 1:25 PM
+! Last update on Dec 15, 2023 09:30 AM
 !
 ! Module to define generic tools
 !------------------------------------------------------------------------------------------
@@ -21,6 +22,21 @@ module S3M_Module_Tools_Generic
     !------------------------------------------------------------------------------------------
     
 contains     
+
+    !------------------------------------------------------------------------------------
+    ! Method to get process PID 
+    function getProcessID() result(str)
+        implicit none
+   
+        character(len=256)               :: str
+        integer(kind = 4)               ::  pid
+
+        ! Get Process ID
+        pid = getpid() 
+        write (str, "(I10)") pid !length of PID number to be checked!!if different from I5 does not work
+            
+    endfunction getProcessID
+    !------------------------------------------------------------------------------------
     
     !------------------------------------------------------------------------------------
     ! Method to filter data and return only the unique values from vec

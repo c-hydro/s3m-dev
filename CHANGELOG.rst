@@ -2,6 +2,10 @@
 Changelog
 =========
 
+Version 5.3.0 (20231215)
+========================
+- Improved handling of input, assimilation, and restard data to allow multiple, parallel runs on the same input data. The improved approach generates temporary copies of inpit files using process PID to avoid problems with concurrent reading of the same netCDF file.
+
 Version 5.2.0 (20230208)
 ========================
 - Improved handling of restard data, with a more rigorous check on the existence of both file and NC layers to avoid spurious results

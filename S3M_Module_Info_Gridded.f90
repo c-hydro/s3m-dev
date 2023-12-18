@@ -3,7 +3,7 @@
 ! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Francesco Avanzi.
 !
 ! Created on May, 20 2014, 9:57 AM
-! Last update on October 26, 2020 03:00 PM
+! Last update on December 15, 2023 03:00 PM
 !
 ! Module to get info gridded
 !------------------------------------------------------------------------------------
@@ -27,7 +27,8 @@ module S3M_Module_Info_Gridded
                                             S3M_Tools_Generic_UnzipFile, &
                                             reshape2DVar, &
                                             filter_array_unique, &
-                                            filter_array_condition
+                                            filter_array_condition, &
+                                            S3M_Tools_Generic_RemoveFile
 #ifdef LIB_NC
     use S3M_Module_Tools_IO,        only:   S3M_Tools_IO_Get2d_NC, &
                                             check
@@ -326,6 +327,8 @@ contains
                 call check( nf90_get_att(iFileID, nf90_global, "nrows", iRows) )
                 ! Close netCDF file
                 call check( nf90_close(iFileID) )
+                call S3M_Tools_Generic_RemoveFile(oS3M_Namelist(iID)%sCommandRemoveFile, &
+                                                  sFileName, .false.) 
                 ! Info
                 call mprintf(.true., iINFO_Main, ' Define forcing data dims ... OK')
                 
@@ -545,6 +548,8 @@ contains
                     
                     ! Close nc file
                     call check( nf90_close(iFileID) )
+                    call S3M_Tools_Generic_RemoveFile(oS3M_Namelist(iID)%sCommandRemoveFile, &
+                                                  sFileName, .false.) 
                     
                     ! Info
                     call mprintf(.true., iINFO_Main, ' Define forcing geographical data  ... OK ')

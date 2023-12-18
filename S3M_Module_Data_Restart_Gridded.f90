@@ -3,7 +3,7 @@
 ! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Francesco Avanzi.
 !
 ! Created on May 7, 2015, 1:27 PM
-! Last update on February 09, 2023 10:30 AM
+! Last update on December 15, 2023 11:20 AM
 !
 ! Module to read restart data.
 !------------------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ module S3M_Module_Data_Restart_Gridded
                                             S3M_Tools_Generic_UnzipFile, &
                                             S3M_Tools_Generic_RemoveFile, &
                                             transpose3Dvar, &
-                                            checkdomainvar
+                                            checkdomainvar, getProcessID
     
     ! Implicit none for all subroutines in this module
     implicit none
@@ -271,7 +271,7 @@ contains
         integer(kind = 4)                       :: iID                  
                                   
         character(len = 256), intent(in)        :: sPathData_Restart
-        character(len = 700)                    :: sFileNameData_Restart, sFileNameData_Restart_Zip
+        character(len = 700)                    :: sFileNameData_Restart, sFileNameData_Restart_Zip, sFileNameData_Temp
         character(len = 700)                    :: sCommandUnzipFile
         character(len = 256)                    :: sVarName
         integer(kind = 4), intent(in)           :: iRows, iCols
@@ -295,7 +295,7 @@ contains
         real(kind = 4), dimension(iRows, iCols),                intent(out)    :: a2dVarLat
         real(kind = 4), dimension(iRows, iCols),                intent(out)    :: a2dVarLon
 
-        character(len = 256)    :: sVarUnits
+        character(len = 256)    :: sVarUnits, sPID
         integer(kind = 4)       :: iErr
         integer(kind = 4)       :: iFileID
         integer(kind = 4)       :: iFlagIceMassBalance
@@ -313,6 +313,8 @@ contains
         a2dVarLat = -9999.0; a2dVarLon = -9999.0;
         bCheckRestart = .false.; 
         bCheckVar = .true.;
+        
+        sPID = ''; sFileNameData_Temp = ''
         !------------------------------------------------------------------------------------------
         
         !------------------------------------------------------------------------------------------
@@ -320,6 +322,9 @@ contains
         sCommandUnzipFile = oS3M_Namelist(iID)%sCommandUnzipFile
         ! Info start
         call mprintf(.true., iINFO_Extra, ' Data :: Restart gridded :: NetCDF ... ' )
+        
+        ! Get unique process ID
+        sPID = adjustl(getProcessID())
         !------------------------------------------------------------------------------------------
         
         !------------------------------------------------------------------------------------------
@@ -328,6 +333,11 @@ contains
         sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
         sTime(12:13)//sTime(15:16)// &
         ".nc"
+        ! Create Filename with unique PID number to avoid simultaneously access to the same Forcing file       
+        sFileNameData_Temp = trim(sPathData_Restart)//"S3M_"// &
+            sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
+            sTime(12:13)//sTime(15:16)//'_'//trim(sPID)// &
+            ".nc"  
 
         ! Info netCDF filename
         call mprintf(.true., iINFO_Basic, ' Get filename (restart gridded): '//trim(sFileNameData_Restart)//' ... ' )
@@ -350,12 +360,12 @@ contains
             ! Unzip file
             call S3M_Tools_Generic_UnzipFile(sCommandUnzipFile, &
                                              sFileNameData_Restart_Zip, &
-                                             sFileNameData_Restart, .true.)
+                                             sFileNameData_Temp, .true.)
             !------------------------------------------------------------------------------------------
         
             !------------------------------------------------------------------------------------------
             ! Opening netCDF file
-            iErr = nf90_open(trim(sFileNameData_Restart), NF90_NOWRITE, iFileID)
+            iErr = nf90_open(trim(sFileNameData_Temp), NF90_NOWRITE, iFileID)
             if (iErr /= 0) then
                 
                 !------------------------------------------------------------------------------------------
@@ -538,6 +548,10 @@ contains
                 
                 ! Closing netcdf file (drops db)
                 iErr = nf90_close(iFileID)
+                
+                ! Remove uncompressed file (to save space on disk)
+                call S3M_Tools_Generic_RemoveFile(oS3M_Namelist(iID)%sCommandRemoveFile, &
+                                                  sFileNameData_Temp, .false.)
                 !------------------------------------------------------------------------------------------
                     
                 !------------------------------------------------------------------------------------------
