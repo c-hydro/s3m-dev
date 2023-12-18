@@ -8,7 +8,7 @@
 sDomainName = 'vda'
 
 ! Debug flag set (iDEBUG = 0; iDEBUG = 1)
-iFlagDebugSet = 0
+iFlagDebugSet = 1
 ! Debug flag level (iNFO_Basic = 0; iINFO_Main = 1; iINFO_Verbose = 2; iINFO_Extra = 3)
 iFlagDebugLevel = 3
 
@@ -20,7 +20,7 @@ iFlagTypeData_Updating_Gridded = 3
 iFlagTypeData_Ass_SWE_Gridded = 3
 
 ! Restart a run (1 = yes; 0 = no)
-iFlagRestart = 0
+iFlagRestart = 1
 ! Computing snow assimilation MODIS + Snow Height (1 = yes; 0 = no)
 iFlagSnowAssim = 1
 ! Computing snow assimilation of SWE (1 = yes; 0 = no)
@@ -32,7 +32,7 @@ iFlagThickFromTerrData = 1
 ! Apply GlacierDebris Mask (0 = no; 1 = yes)
 iFlagGlacierDebris = 0
 ! Output mode (0 = basic output layers; 1 = extended, all layers -- much slower)
-iFlagOutputMode = 0
+iFlagOutputMode = 1
 ! Assimilate only positive differences (0 = no; 1 = yes)
 iFlagAssOnlyPos = 0
 ! -----------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ a1iDimsForcing = 206, 446
 
 ! DT INFO ---------------------------------------------------------------------------------------
 ! Simulation length [hours]
-iSimLength = 8760
+iSimLength = 240
 ! Model dT [seconds]
 iDtModel = 3600
 ! Data forcing gridded dT [seconds]
@@ -72,28 +72,28 @@ iScaleFactor_SWEass = 10
 
 ! TIME INFO -------------------------------------------------------------------------------------
 ! Start time (yyyymmddHHMM format)
-sTimeStart = 201709010000
+sTimeStart = 202301010000
 ! Re-start time (yyyymmddHHMM format)
-sTimeRestart = 201708312300
+sTimeRestart = 202212312300
 ! -----------------------------------------------------------------------------------------------
 
 ! PATH(S) INFO ----------------------------------------------------------------------------------
 ! DATA STATIC
 ! Static gridded data path [Variable(s) --> DEM, CN]
-sPathData_Static_Gridded = '/home/Terrain/'
+sPathData_Static_Gridded = '/home/francesco/Documents/NetBeans_Dev/S3M/dati/static/'
 
 ! DATA DYNAMIC
 ! Forcing gridded data path [Variable(s) --> Rain, AirTemperature, IncRadiation, RelHumidity]
-sPathData_Forcing_Gridded = '/home/$yyyy/$mm/$dd/'
+sPathData_Forcing_Gridded = '/home/francesco/Documents/NetBeans_Dev/S3M/dati/dynamic/$yyyy/$mm/$dd/'
 
 ! Updating gridded data path [Variable(s) --> SnowCoverArea, SnowQuality, SnowMask, SnowHeight, SnowKernel]
-sPathData_Updating_Gridded = '/home/$yyyy/$mm/$dd/'
+sPathData_Updating_Gridded = '/home/francesco/Documents/NetBeans_Dev/S3M/dati/updating/$yyyy/$mm/$dd/'
 
 ! Output gridded data path
-sPathData_Output_Gridded = '/home/$yyyy/$mm/$dd/'
+sPathData_Output_Gridded = '/home/francesco/Documents/NetBeans_Dev/S3M/output/$yyyy/$mm/$dd/'
 
 ! Restart gridded data path
-sPathData_Restart_Gridded = '/home/Restart_240/'
+sPathData_Restart_Gridded = '/home/francesco/Documents/NetBeans_Dev/S3M/dati/restart/'
 
 ! SWE assimilation gridded data path [Variable(s) --> SWE coming from external source, ex. ARPA VdA]
 sPathData_SWE_Assimilation_Gridded = '/home/$yyyy/$mm/$dd/'
@@ -170,11 +170,11 @@ dRhoW = 1000
 
 ! INFO MODEL ------------------------------------------------------------------------------------
 ! Release version     (x.x.x)
-sReleaseVersion = '5.2.0'
+sReleaseVersion = '5.3.0'
 ! Author(s)         (Surname N.)
 sAuthorNames = 'Avanzi F., Gabellani S., Delogu F., Silvestro F.'
 ! Release Date      (yyyy/mm/dd)
-sReleaseDate = '2023/02/09'
+sReleaseDate = '2023/12/15'
 ! -----------------------------------------------------------------------------------------------
 
 /

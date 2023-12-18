@@ -3,7 +3,7 @@
 ! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Francesco Avanzi
 !
 ! Created on April 22, 2015, 5:19 PM
-! Last update on Nov 19, 2020 08:30 AM
+! Last update on Dec 15, 2023 09:30 AM
 !
 ! Module to read forcing map.
 !------------------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ module S3M_Module_Data_Forcing_Gridded
                                             S3M_Tools_Generic_SwitchGrid, &
                                             S3M_Tools_Generic_UnzipFile, &
                                             S3M_Tools_Generic_RemoveFile, &
-                                            check2Dvar
+                                            check2Dvar, getProcessID
                                             
     use S3M_Module_Tools_Time,      only:   S3M_Tools_Time_MonthVal
                              
@@ -314,7 +314,7 @@ contains
         integer(kind = 4)                       :: iID                  
         
         character(len = 256), intent(in)        :: sPathData_Forcing
-        character(len = 700)                    :: sFileNameData_Forcing, sFileNameData_Forcing_Zip
+        character(len = 700)                    :: sFileNameData_Forcing, sFileNameData_Forcing_Zip, sFileNameData_Temp
         character(len = 700)                    :: sCommandUnzipFile, sCommandRemoveFile
         character(len = 256)                    :: sVarName
         integer(kind = 4), intent(in)           :: iRows, iCols
@@ -330,7 +330,7 @@ contains
         real(kind = 4), dimension(iRows, iCols), intent(out)    :: a2dVarIncRad
         real(kind = 4), dimension(iRows, iCols), intent(out)    :: a2dVarRelHum       
 
-        character(len = 256):: sVarUnits
+        character(len = 256):: sVarUnits, sPID
         integer(kind = 4)   :: iErr
         integer(kind = 4)   :: iFileID
         
@@ -342,6 +342,7 @@ contains
         a2dVarPrecip = -9999.0; a2dVarTa = -9999.0; a2dVarIncRad = -9999.0; a2dVarRelHum = -9999.0; 
 
         sFileNameData_Forcing = ''; sFileNameData_Forcing_Zip = ''; sTimeMonth = ''
+        sFileNameData_Temp = ''; sPid = ''
         
         ! Checking date
         write(sTimeMonth,'(A,A,A)') sTime(1:4), sTime(6:7), sTime(9:10)
@@ -357,12 +358,21 @@ contains
         !------------------------------------------------------------------------------------------
         
         !------------------------------------------------------------------------------------------
+        ! Get unique process ID
+        sPID = adjustl(getProcessID())
+        
         ! Filename forcing (example: MeteoData_201404300000.nc.gz)
         sFileNameData_Forcing = trim(sPathData_Forcing)//"MeteoData_"// &
         sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
         sTime(12:13)//sTime(15:16)// &
         ".nc"
-
+        
+        ! Create Filename with unique PID number to avoid simultaneously access to the same Forcing file       
+        sFileNameData_Temp = trim(sPathData_Forcing)//"MeteoData_"// &
+            sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
+            sTime(12:13)//sTime(15:16)//'_'//trim(sPID)// &
+            ".nc"  
+        
         ! Info netCDF filename
         call mprintf(.true., iINFO_Verbose, ' Get filename (forcing gridded): '//trim(sFileNameData_Forcing)//' ... ' )
         !------------------------------------------------------------------------------------------
@@ -387,12 +397,12 @@ contains
             ! Unzip file
             call S3M_Tools_Generic_UnzipFile(oS3M_Namelist(iID)%sCommandUnzipFile, &
                                              sFileNameData_Forcing_Zip, &
-                                             sFileNameData_Forcing, .true.)
+                                             sFileNameData_Temp, .true.)
             !------------------------------------------------------------------------------------------
 
             !------------------------------------------------------------------------------------------
             ! Open netCDF file
-            iErr = nf90_open(trim(sFileNameData_Forcing), NF90_NOWRITE, iFileID)
+            iErr = nf90_open(trim(sFileNameData_Temp), NF90_NOWRITE, iFileID)
             if (iErr /= 0) then
                 call mprintf(.true., iWARN, ' Problem opening uncompressed netCDF file: '// &
                              trim(sFileNameData_Forcing)//' --> Undefined forcing data values' )
@@ -456,7 +466,7 @@ contains
                 iErr = nf90_close(iFileID)
                 ! Remove uncompressed file (to save space on disk)
                 call S3M_Tools_Generic_RemoveFile(oS3M_Namelist(iID)%sCommandRemoveFile, &
-                                                  sFileNameData_Forcing, .false.)
+                                                  sFileNameData_Temp, .false.)
                 !------------------------------------------------------------------------------------------
                                         
                 !------------------------------------------------------------------------------------------
@@ -490,7 +500,7 @@ contains
         integer(kind = 4)                   :: iFlagTypeData_Forcing
                                       
         character(len = 256), intent(in)    :: sPathData_Forcing
-        character(len = 700)                :: sFileNameData_Forcing, sFileNameData_Forcing_Zip
+        character(len = 700)                :: sFileNameData_Forcing, sFileNameData_Forcing_Zip, sFileNameData_Temp
         character(len = 700)                :: sCommandUnzipFile
         character(len = 256)                :: sVarName
         integer(kind = 4), intent(in)       :: iRows, iCols
@@ -506,7 +516,7 @@ contains
         real(kind = 4), dimension(iRows, iCols), intent(out)    :: a2dVarIncRad
         real(kind = 4), dimension(iRows, iCols), intent(out)    :: a2dVarRelHum       
        
-        character(len = 256):: sVarUnits
+        character(len = 256):: sVarUnits, sPID
         integer(kind = 4)   :: iErr
         integer(kind = 4)   :: iFileID, iScaleFactor_Forcing
         
@@ -517,7 +527,7 @@ contains
         ! Initialize variable(s)
         a2dVarPrecip = -9999.0; a2dVarTa = -9999.0; a2dVarIncRad = -9999.0; a2dVarRelHum = -9999.0;
 
-        sFileNameData_Forcing = ''; sFileNameData_Forcing_Zip = ''; sTimeMonth = ''
+        sFileNameData_Forcing = ''; sFileNameData_Forcing_Zip = ''; sFileNameData_Temp = ''; sTimeMonth = ''; sPid = ''
         
         ! Checking date
         write(sTimeMonth,'(A,A,A)') sTime(1:4), sTime(6:7), sTime(9:10)
@@ -534,6 +544,9 @@ contains
         !------------------------------------------------------------------------------------------
         ! Info binary file(s) time step
         call mprintf(.true., iINFO_Verbose, ' Get (forcing gridded) at time '//trim(sTime)//' ... ')
+        
+        ! Get unique process ID
+        sPID = adjustl(getProcessID())
         !------------------------------------------------------------------------------------------
         
         !------------------------------------------------------------------------------------------
@@ -542,6 +555,11 @@ contains
             sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
             sTime(12:13)//sTime(15:16)// &
             ".bin"  
+        sFileNameData_Temp = trim(sPathData_Forcing)//"Rain_"// &
+            sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
+            sTime(12:13)//sTime(15:16)//'_'//trim(sPID)// &
+            ".bin"  
+            
         call mprintf(.true., iINFO_Extra, ' Get filename (forcing gridded): '//trim(sFileNameData_Forcing) )
 
         ! Checking file input availability
@@ -555,18 +573,18 @@ contains
             ! Unzip file
             call S3M_Tools_Generic_UnzipFile(oS3M_Namelist(iID)%sCommandUnzipFile, &
                                              sFileNameData_Forcing_Zip, &
-                                             sFileNameData_Forcing, .true.)
+                                             sFileNameData_Temp, .true.)
                                              
             ! Read binary data
             if (iFlagTypeData_Forcing == 1) then
-                call S3M_Tools_IO_Get2d_Binary_INT(sFileNameData_Forcing, a2dVar, iRows, iCols, iScaleFactor_Forcing, .true., iErr) 
+                call S3M_Tools_IO_Get2d_Binary_INT(sFileNameData_Temp, a2dVar, iRows, iCols, iScaleFactor_Forcing, .true., iErr) 
             elseif (iFlagTypeData_Forcing == 2) then
-                call S3M_Tools_IO_Get2d_Binary_DBL(sFileNameData_Forcing, a2dVar, iRows, iCols, iScaleFactor_Forcing, .true., iErr) 
+                call S3M_Tools_IO_Get2d_Binary_DBL(sFileNameData_Temp, a2dVar, iRows, iCols, iScaleFactor_Forcing, .true., iErr) 
             endif
    
             ! Remove uncompressed file (to save space on disk)
             call S3M_Tools_Generic_RemoveFile(oS3M_Namelist(iID)%sCommandRemoveFile, &
-                                              sFileNameData_Forcing, .false.)
+                                              sFileNameData_Temp, .false.)
             
         endif
         a2dVarPrecip = a2dVar
@@ -578,40 +596,9 @@ contains
             sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
             sTime(12:13)//sTime(15:16)// &
             ".bin"
-        call mprintf(.true., iINFO_Extra, ' Get filename (forcing gridded): '//trim(sFileNameData_Forcing) )
-
-        ! Checking file input availability
-        sFileNameData_Forcing_Zip = trim(sFileNameData_Forcing)//'.gz'
-        inquire (file = sFileNameData_Forcing_Zip, exist = bFileExist)
-        if ( .not. bFileExist ) then
-            call mprintf(.true., iWARN, ' Problem opening uncompressed binary file: '// &
-                         trim(sFileNameData_Forcing_Zip)//' --> Undefined forcing data values!' )
-            a2dVar = -9999.0
-        else
-            ! Unzip file
-            call S3M_Tools_Generic_UnzipFile(oS3M_Namelist(iID)%sCommandUnzipFile, &
-                                             sFileNameData_Forcing_Zip, &
-                                             sFileNameData_Forcing, .true.)
-                                             
-            ! Read binary data
-            if (iFlagTypeData_Forcing == 1) then
-                call S3M_Tools_IO_Get2d_Binary_INT(sFileNameData_Forcing, a2dVar, iRows, iCols, iScaleFactor_Forcing, .true., iErr) 
-            elseif (iFlagTypeData_Forcing == 2) then
-                call S3M_Tools_IO_Get2d_Binary_DBL(sFileNameData_Forcing, a2dVar, iRows, iCols, iScaleFactor_Forcing, .true., iErr) 
-            endif
-            
-            ! Remove uncompressed file (to save space on disk)
-            call S3M_Tools_Generic_RemoveFile(oS3M_Namelist(iID)%sCommandRemoveFile, &
-                                              sFileNameData_Forcing, .false.)
-        endif
-        a2dVarTa = a2dVar
-        !------------------------------------------------------------------------------------------
-        
-        !------------------------------------------------------------------------------------------
-        ! Radiation  (example: Radiation_201405010000.bin.gz)
-        sFileNameData_Forcing = trim(sPathData_Forcing)//"Radiation_"// &
+        sFileNameData_Temp = trim(sPathData_Forcing)//"Temperature_"// &
             sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
-            sTime(12:13)//sTime(15:16)// &
+            sTime(12:13)//sTime(15:16)//'_'//trim(sPID)// &
             ".bin"
         call mprintf(.true., iINFO_Extra, ' Get filename (forcing gridded): '//trim(sFileNameData_Forcing) )
 
@@ -626,18 +613,57 @@ contains
             ! Unzip file
             call S3M_Tools_Generic_UnzipFile(oS3M_Namelist(iID)%sCommandUnzipFile, &
                                              sFileNameData_Forcing_Zip, &
-                                             sFileNameData_Forcing, .true.)
+                                             sFileNameData_Temp, .true.)
                                              
             ! Read binary data
             if (iFlagTypeData_Forcing == 1) then
-                call S3M_Tools_IO_Get2d_Binary_INT(sFileNameData_Forcing, a2dVar, iRows, iCols, iScaleFactor_Forcing, .true., iErr) 
+                call S3M_Tools_IO_Get2d_Binary_INT(sFileNameData_Temp, a2dVar, iRows, iCols, iScaleFactor_Forcing, .true., iErr) 
             elseif (iFlagTypeData_Forcing == 2) then
-                call S3M_Tools_IO_Get2d_Binary_DBL(sFileNameData_Forcing, a2dVar, iRows, iCols, iScaleFactor_Forcing, .true., iErr) 
+                call S3M_Tools_IO_Get2d_Binary_DBL(sFileNameData_Temp, a2dVar, iRows, iCols, iScaleFactor_Forcing, .true., iErr) 
             endif
             
             ! Remove uncompressed file (to save space on disk)
             call S3M_Tools_Generic_RemoveFile(oS3M_Namelist(iID)%sCommandRemoveFile, &
-                                              sFileNameData_Forcing, .false.)
+                                              sFileNameData_Temp, .false.)
+        endif
+        a2dVarTa = a2dVar
+        !------------------------------------------------------------------------------------------
+        
+        !------------------------------------------------------------------------------------------
+        ! Radiation  (example: Radiation_201405010000.bin.gz)
+        sFileNameData_Forcing = trim(sPathData_Forcing)//"Radiation_"// &
+            sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
+            sTime(12:13)//sTime(15:16)// &
+            ".bin"
+        sFileNameData_Temp = trim(sPathData_Forcing)//"Radiation_"// &
+            sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
+            sTime(12:13)//sTime(15:16)//'_'//trim(sPID)// &
+            ".bin" 
+        call mprintf(.true., iINFO_Extra, ' Get filename (forcing gridded): '//trim(sFileNameData_Forcing) )
+
+        ! Checking file input availability
+        sFileNameData_Forcing_Zip = trim(sFileNameData_Forcing)//'.gz'
+        inquire (file = sFileNameData_Forcing_Zip, exist = bFileExist)
+        if ( .not. bFileExist ) then
+            call mprintf(.true., iWARN, ' Problem opening uncompressed binary file: '// &
+                         trim(sFileNameData_Forcing_Zip)//' --> Undefined forcing data values!' )
+            a2dVar = -9999.0
+        else
+            ! Unzip file
+            call S3M_Tools_Generic_UnzipFile(oS3M_Namelist(iID)%sCommandUnzipFile, &
+                                             sFileNameData_Forcing_Zip, &
+                                             sFileNameData_Temp, .true.)
+                                             
+            ! Read binary data
+            if (iFlagTypeData_Forcing == 1) then
+                call S3M_Tools_IO_Get2d_Binary_INT(sFileNameData_Temp, a2dVar, iRows, iCols, iScaleFactor_Forcing, .true., iErr) 
+            elseif (iFlagTypeData_Forcing == 2) then
+                call S3M_Tools_IO_Get2d_Binary_DBL(sFileNameData_Temp, a2dVar, iRows, iCols, iScaleFactor_Forcing, .true., iErr) 
+            endif
+            
+            ! Remove uncompressed file (to save space on disk)
+            call S3M_Tools_Generic_RemoveFile(oS3M_Namelist(iID)%sCommandRemoveFile, &
+                                              sFileNameData_Temp, .false.)
         endif
         a2dVarIncRad = a2dVar
         !------------------------------------------------------------------------------------------
@@ -647,6 +673,10 @@ contains
         sFileNameData_Forcing = trim(sPathData_Forcing)//"RelUmid_"// &
             sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
             sTime(12:13)//sTime(15:16)// &
+            ".bin"
+        sFileNameData_Temp = trim(sPathData_Forcing)//"RelUmid_"// &
+            sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
+            sTime(12:13)//sTime(15:16)//'_'//trim(sPID)// &
             ".bin"
         call mprintf(.true., iINFO_Extra, ' Get filename (forcing gridded): '//trim(sFileNameData_Forcing) )
 
@@ -661,18 +691,18 @@ contains
             ! Unzip file
             call S3M_Tools_Generic_UnzipFile(oS3M_Namelist(iID)%sCommandUnzipFile, & 
                                              sFileNameData_Forcing_Zip, & 
-                                             sFileNameData_Forcing, .true.)
+                                             sFileNameData_Temp, .true.)
                                              
             ! Read binary data
             if (iFlagTypeData_Forcing == 1) then
-                call S3M_Tools_IO_Get2d_Binary_INT(sFileNameData_Forcing, a2dVar, iRows, iCols, iScaleFactor_Forcing, .true., iErr) 
+                call S3M_Tools_IO_Get2d_Binary_INT(sFileNameData_Temp, a2dVar, iRows, iCols, iScaleFactor_Forcing, .true., iErr) 
             elseif (iFlagTypeData_Forcing == 2) then
-                call S3M_Tools_IO_Get2d_Binary_DBL(sFileNameData_Forcing, a2dVar, iRows, iCols, iScaleFactor_Forcing, .true., iErr) 
+                call S3M_Tools_IO_Get2d_Binary_DBL(sFileNameData_Temp, a2dVar, iRows, iCols, iScaleFactor_Forcing, .true., iErr) 
             endif
             
             ! Remove uncompressed file (to save space on disk)
             call S3M_Tools_Generic_RemoveFile(oS3M_Namelist(iID)%sCommandRemoveFile, &
-                                              sFileNameData_Forcing, .false.)
+                                              sFileNameData_Temp, .false.)
         endif
         a2dVarRelHum = a2dVar
         !------------------------------------------------------------------------------------------

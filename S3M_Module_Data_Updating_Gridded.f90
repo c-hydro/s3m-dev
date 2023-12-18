@@ -3,7 +3,7 @@
 ! Author(s): Fabio Delogu, Valerio Basso, Francesco Avanzi.
 !
 ! Created on December 19, 2017, 1:19 PM
-! Last update on October 26, 2020 12:00 PM
+! Last update on December 15, 2023 10:30 PM
 !
 ! Module to read the snow-depth-assimilation data: SH (snow depth), SQA (quality), SCA, kernel.
 !------------------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ module S3M_Module_Data_Updating_Gridded
                                             S3M_Tools_Generic_SwitchGrid, &
                                             S3M_Tools_Generic_UnzipFile, &
                                             S3M_Tools_Generic_RemoveFile, &
-                                            check2Dvar
+                                            check2Dvar, getProcessID
                                             
     use S3M_Module_Tools_Time,      only:   S3M_Tools_Time_MonthVal
                              
@@ -251,7 +251,7 @@ contains
         integer(kind = 4)                       :: iID                  
         
         character(len = 256), intent(in)        :: sPathData_Updating
-        character(len = 700)                    :: sFileNameData_Updating, sFileNameData_Updating_Zip
+        character(len = 700)                    :: sFileNameData_Updating, sFileNameData_Updating_Zip, sFileNameData_Temp
         character(len = 700)                    :: sCommandUnzipFile, sCommandRemoveFile
         character(len = 256)                    :: sVarName
         integer(kind = 4), intent(in)           :: iRows, iCols
@@ -267,7 +267,7 @@ contains
         real(kind = 4), dimension(iRows, iCols), intent(out)    :: a2dVarSnowHeight
         real(kind = 4), dimension(iRows, iCols), intent(out)    :: a2dVarSnowKernel
        
-        character(len = 256):: sVarUnits
+        character(len = 256):: sVarUnits, sPID
         integer(kind = 4)   :: iErr
         integer(kind = 4)   :: iFileID
         
@@ -279,7 +279,8 @@ contains
         a2dVarSnowCA = -9999.0; a2dVarSnowCA = -9999.0;
         a2dVarSnowHeight = -9999.0; a2dVarSnowKernel = -9999.0;
         
-        sFileNameData_Updating = ''; sFileNameData_Updating_Zip = ''; sTimeMonth = ''
+        sFileNameData_Updating = ''; sFileNameData_Updating_Zip = ''; sFileNameData_Temp = ''; sTimeMonth = ''
+        sPID = ''
         
         ! Checking date
         write(sTimeMonth,'(A,A,A)') sTime(1:4), sTime(6:7), sTime(9:10)
@@ -292,6 +293,9 @@ contains
         
         ! Info start
         call mprintf(.true., iINFO_Extra, ' Data :: Updating gridded :: NetCDF ... ' )
+        
+        ! Get unique process ID
+        sPID = adjustl(getProcessID())
         !------------------------------------------------------------------------------------------
         
         !------------------------------------------------------------------------------------------
@@ -300,6 +304,11 @@ contains
         sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
         sTime(12:13)//sTime(15:16)// &
         ".nc"
+        ! Create Filename with unique PID number to avoid simultaneously access to the same Forcing file       
+        sFileNameData_Temp = trim(sPathData_Updating)//"Updating_"// &
+            sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
+            sTime(12:13)//sTime(15:16)//'_'//trim(sPID)// &
+            ".nc" 
 
         ! Info netCDF filename
         call mprintf(.true., iINFO_Verbose, ' Get filename (updating gridded): '//trim(sFileNameData_Updating)//' ... ' )
@@ -325,12 +334,12 @@ contains
             ! Unzip file
             call S3M_Tools_Generic_UnzipFile(oS3M_Namelist(iID)%sCommandUnzipFile, &
                                              sFileNameData_Updating_Zip, &
-                                             sFileNameData_Updating, .true.)
+                                             sFileNameData_Temp, .true.)
             !------------------------------------------------------------------------------------------
         
             !------------------------------------------------------------------------------------------
             ! Open netCDF file
-            iErr = nf90_open(trim(sFileNameData_Updating), NF90_NOWRITE, iFileID)
+            iErr = nf90_open(trim(sFileNameData_Temp), NF90_NOWRITE, iFileID)
             if (iErr /= 0) then
                 call mprintf(.true., iWARN, ' Problem opening uncompressed netCDF file: '// &
                              trim(sFileNameData_Updating)//' --> Undefined updating data values' )
@@ -402,7 +411,7 @@ contains
                 iErr = nf90_close(iFileID)
                 ! Remove uncompressed file (to save space on disk)
                 call S3M_Tools_Generic_RemoveFile(oS3M_Namelist(iID)%sCommandRemoveFile, &
-                                                  sFileNameData_Updating, .false.)
+                                                  sFileNameData_Temp, .false.)
                 !------------------------------------------------------------------------------------------
                 
                 !------------------------------------------------------------------------------------------
@@ -436,7 +445,7 @@ contains
         integer(kind = 4)                   :: iFlagTypeData_Updating
                                       
         character(len = 256), intent(in)    :: sPathData_Updating
-        character(len = 700)                :: sFileNameData_Updating, sFileNameData_Updating_Zip
+        character(len = 700)                :: sFileNameData_Updating, sFileNameData_Updating_Zip, sFileNameData_Temp
         character(len = 700)                :: sCommandUnzipFile
         character(len = 256)                :: sVarName
         integer(kind = 4), intent(in)       :: iRows, iCols
@@ -452,7 +461,7 @@ contains
         real(kind = 4), dimension(iRows, iCols), intent(out)    :: a2dVarSnowHeight
         real(kind = 4), dimension(iRows, iCols), intent(out)    :: a2dVarSnowKernel        
        
-        character(len = 256):: sVarUnits
+        character(len = 256):: sVarUnits, sPID
         integer(kind = 4)   :: iErr
         integer(kind = 4)   :: iFileID, iScaleFactor_Update
         
@@ -464,7 +473,8 @@ contains
         a2dVarSnowCA = -9999.0; a2dVarSnowCA = -9999.0;
         a2dVarSnowKernel = -9999.0; a2dVarSnowHeight = -9999.0;        
                 
-        sFileNameData_Updating = ''; sFileNameData_Updating_Zip = ''; sTimeMonth = ''
+        sFileNameData_Updating = ''; sFileNameData_Updating_Zip = ''; sFileNameData_Temp = ''; sTimeMonth = ''
+        sPID = ''
         
         ! Checking date
         write(sTimeMonth,'(A,A,A)') sTime(1:4), sTime(6:7), sTime(9:10)
@@ -477,6 +487,9 @@ contains
 
         ! Info start
         call mprintf(.true., iINFO_Extra, ' Data :: Updating gridded :: Binary ... ' )
+        
+        ! Get unique process ID
+        sPID = adjustl(getProcessID())
         !------------------------------------------------------------------------------------------
         
         !------------------------------------------------------------------------------------------
@@ -493,6 +506,10 @@ contains
             sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
             sTime(12:13)//sTime(15:16)// &
             ".bin"
+        sFileNameData_Temp = trim(sPathData_Updating)//"SnowHeight_"// &
+                sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
+                sTime(12:13)//sTime(15:16)//'_'//trim(sPID)// &
+                ".bin"  
         call mprintf(.true., iINFO_Extra, ' Get filename (updating gridded): '//trim(sPathData_Updating) )
 
         ! Checking file input availability
@@ -507,18 +524,18 @@ contains
             ! Unzip file
             call S3M_Tools_Generic_UnzipFile(oS3M_Namelist(iID)%sCommandUnzipFile, &
                                              sFileNameData_Updating_Zip, &
-                                             sFileNameData_Updating, .true.)
+                                             sFileNameData_Temp, .true.)
                                              
             ! Read binary data
             if (iFlagTypeData_Updating == 1) then
-                call S3M_Tools_IO_Get2d_Binary_INT(sFileNameData_Updating, a2dVar, iRows, iCols, iScaleFactor_Update, .true., iErr) 
+                call S3M_Tools_IO_Get2d_Binary_INT(sFileNameData_Temp, a2dVar, iRows, iCols, iScaleFactor_Update, .true., iErr) 
             elseif (iFlagTypeData_Updating == 2) then
-                call S3M_Tools_IO_Get2d_Binary_DBL(sFileNameData_Updating, a2dVar, iRows, iCols, iScaleFactor_Update, .true., iErr) 
+                call S3M_Tools_IO_Get2d_Binary_DBL(sFileNameData_Temp, a2dVar, iRows, iCols, iScaleFactor_Update, .true., iErr) 
             endif
             
             ! Remove uncompressed file (to save space on disk)
             call S3M_Tools_Generic_RemoveFile(oS3M_Namelist(iID)%sCommandRemoveFile, &
-                                             sFileNameData_Updating, .false.)
+                                             sFileNameData_Temp, .false.)
         endif
         a2dVarSnowHeight = a2dVar
         !------------------------------------------------------------------------------------------
@@ -529,6 +546,10 @@ contains
             sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
             sTime(12:13)//sTime(15:16)// &
             ".bin"
+        sFileNameData_Temp = trim(sPathData_Updating)//"Kernel_"// &
+                sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
+                sTime(12:13)//sTime(15:16)//'_'//trim(sPID)// &
+                ".bin"  
         call mprintf(.true., iINFO_Extra, ' Get filename (updating gridded): '//trim(sFileNameData_Updating) )
 
         ! Checking file input availability
@@ -543,18 +564,18 @@ contains
             ! Unzip file
             call S3M_Tools_Generic_UnzipFile(oS3M_Namelist(iID)%sCommandUnzipFile, &
                                              sFileNameData_Updating_Zip, &
-                                             sFileNameData_Updating, .true.)
+                                             sFileNameData_Temp, .true.)
                                              
             ! Read binary data
             if (iFlagTypeData_Updating == 1) then
-                call S3M_Tools_IO_Get2d_Binary_INT(sFileNameData_Updating, a2dVar, iRows, iCols, iScaleFactor_Update, .true., iErr)
+                call S3M_Tools_IO_Get2d_Binary_INT(sFileNameData_Temp, a2dVar, iRows, iCols, iScaleFactor_Update, .true., iErr)
             elseif (iFlagTypeData_Updating == 2) then
-                call S3M_Tools_IO_Get2d_Binary_DBL(sFileNameData_Updating, a2dVar, iRows, iCols, iScaleFactor_Update, .true., iErr)
+                call S3M_Tools_IO_Get2d_Binary_DBL(sFileNameData_Temp, a2dVar, iRows, iCols, iScaleFactor_Update, .true., iErr)
             endif
                 
             ! Remove uncompressed file (to save space on disk)
             call S3M_Tools_Generic_RemoveFile(oS3M_Namelist(iID)%sCommandRemoveFile, &
-                                              sFileNameData_Updating, .false.)
+                                              sFileNameData_Temp, .false.)
         endif
         a2dVarSnowKernel = a2dVar
         !------------------------------------------------------------------------------------------
@@ -565,6 +586,10 @@ contains
             sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
             sTime(12:13)//sTime(15:16)// &
             ".bin"
+        sFileNameData_Temp = trim(sPathData_Updating)//"SCA_"// &
+                sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
+                sTime(12:13)//sTime(15:16)//'_'//trim(sPID)// &
+                ".bin"          
         call mprintf(.true., iINFO_Extra, ' Get filename (updating gridded): '//trim(sFileNameData_Updating) )
 
         ! Checking file input availability
@@ -579,18 +604,18 @@ contains
             ! Unzip file
             call S3M_Tools_Generic_UnzipFile(oS3M_Namelist(iID)%sCommandUnzipFile, &
                                              sFileNameData_Updating_Zip, &
-                                             sFileNameData_Updating, .true.)
+                                             sFileNameData_Temp, .true.)
                                              
             ! Read binary data
             if (iFlagTypeData_Updating == 1) then
-                call S3M_Tools_IO_Get2d_Binary_INT(sFileNameData_Updating, a2dVar, iRows, iCols, iScaleFactor_Update, .true., iErr)
+                call S3M_Tools_IO_Get2d_Binary_INT(sFileNameData_Temp, a2dVar, iRows, iCols, iScaleFactor_Update, .true., iErr)
             elseif (iFlagTypeData_Updating == 2) then
-                call S3M_Tools_IO_Get2d_Binary_DBL(sFileNameData_Updating, a2dVar, iRows, iCols, iScaleFactor_Update, .true., iErr)
+                call S3M_Tools_IO_Get2d_Binary_DBL(sFileNameData_Temp, a2dVar, iRows, iCols, iScaleFactor_Update, .true., iErr)
             endif
                 
             ! Remove uncompressed file (to save space on disk)
             call S3M_Tools_Generic_RemoveFile(oS3M_Namelist(iID)%sCommandRemoveFile, &
-                                              sFileNameData_Updating, .false.)
+                                              sFileNameData_Temp, .false.)
         endif
         a2dVarSnowCA = a2dVar
         !------------------------------------------------------------------------------------------
@@ -601,6 +626,10 @@ contains
             sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
             sTime(12:13)//sTime(15:16)// &
             ".bin"
+        sFileNameData_Temp = trim(sPathData_Updating)//"SQA_"// &
+                sTime(1:4)//sTime(6:7)//sTime(9:10)// & 
+                sTime(12:13)//sTime(15:16)//'_'//trim(sPID)// &
+                ".bin"         
         call mprintf(.true., iINFO_Extra, ' Get filename (updating gridded): '//trim(sFileNameData_Updating) )
 
         ! Checking file input availability
@@ -615,17 +644,17 @@ contains
             ! Unzip file
             call S3M_Tools_Generic_UnzipFile(oS3M_Namelist(iID)%sCommandUnzipFile, &
                                              sFileNameData_Updating_Zip, &
-                                             sFileNameData_Updating, .true.)
+                                             sFileNameData_Temp, .true.)
             ! Read binary data
             if (iFlagTypeData_Updating == 1) then
-                call S3M_Tools_IO_Get2d_Binary_INT(sFileNameData_Updating, a2dVar, iRows, iCols, iScaleFactor_Update, .true., iErr)
+                call S3M_Tools_IO_Get2d_Binary_INT(sFileNameData_Temp, a2dVar, iRows, iCols, iScaleFactor_Update, .true., iErr)
             elseif (iFlagTypeData_Updating == 2) then
-                call S3M_Tools_IO_Get2d_Binary_DBL(sFileNameData_Updating, a2dVar, iRows, iCols, iScaleFactor_Update, .true., iErr)
+                call S3M_Tools_IO_Get2d_Binary_DBL(sFileNameData_Temp, a2dVar, iRows, iCols, iScaleFactor_Update, .true., iErr)
             endif
                 
             ! Remove uncompressed file (to save space on disk)
             call S3M_Tools_Generic_RemoveFile(oS3M_Namelist(iID)%sCommandRemoveFile, &
-                                              sFileNameData_Updating, .false.)
+                                              sFileNameData_Temp, .false.)
         endif
         a2dVarSnowQA = a2dVar            
         !------------------------------------------------------------------------------------------
