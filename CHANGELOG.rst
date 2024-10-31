@@ -2,6 +2,10 @@
 Changelog
 =========
 
+Version 5.3.2 (20241031)
+========================
+- Performed some minor changes to S3M_Module_Tools_Generic.f90, function filter_array_unique, to neglect -9999.0 while counting glacier IDs (this significantly speeds up that routine)
+
 Version 5.3.1 (20240917)
 ========================
 - Changed license to EUPL. 

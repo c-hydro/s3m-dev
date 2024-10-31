@@ -118,16 +118,20 @@ contains
 
         do i=1,size(vec)
             
-            !count the number of occurrences of this element:
-            num = count( vec(i)==vec )
+            if (vec(i) > -9999.0) then
+            
+                !count the number of occurrences of this element:
+                num = count( vec(i)==vec )
 
-            if (num==1) then
-                !there is only one, flag it:
-                mask(i) = .true.
-            else
-                !flag this value only if it hasn't already been flagged:
-                if (.not. any(vec(i)==vec .and. mask) ) mask(i) = .true.
-            end if
+                if (num==1) then
+                    !there is only one, flag it:
+                    mask(i) = .true.
+                else
+                    !flag this value only if it hasn't already been flagged:
+                    if (.not. any(vec(i)==vec .and. mask) ) mask(i) = .true.
+                end if
+                
+            endif
 
         end do
 
