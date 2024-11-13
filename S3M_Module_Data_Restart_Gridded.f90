@@ -3,7 +3,7 @@
 ! Author(s): Fabio Delogu, Francesco Silvestro, Simone Gabellani, Francesco Avanzi.
 !
 ! Created on May 7, 2015, 1:27 PM
-! Last update on December 15, 2023 11:20 AM
+! Last update on November 13, 2024 10:55 AM
 !
 ! Module to read restart data.
 !------------------------------------------------------------------------------------------
@@ -490,7 +490,7 @@ contains
                     ! Ice thickness
                     if (oS3M_Namelist(iID)%iFlagThickFromTerrData .eq. 0) then
                     !We load Thickness from Restart data only if we said S3M to do so in the infoFile. 
-                        sVarName = 'Thickness'
+                        sVarName = 'Ice_Thickness'
                         call S3M_Tools_IO_Get2d_NC((sVarName), iFileID, a2dVar, sVarUnits, iCols, iRows, .false., iErr)
                         if(iErr /= 0) then
                             call mprintf(.true., iWARN, ' Get restart gridded data FAILED! '// &
