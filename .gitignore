@@ -1,0 +1,48 @@
+# The gitignore file lists files (and folders) that should be ignored by git.
+# Best practice is to ignore:
+## Generated Files (created in the build process, e.g. .pyc files)
+## Sensitive Information (passwords or API keys, e.g. .config, .env files)
+## User-Specific Files (including outputs of logs used for debugging)
+## Build Artifacts and Output (also results of running your code, e.g. /bin, /build folders)
+## Third-Party Libraries and Dependencies (including virtual environmen foldes such as /.venv or similar, DO commit a file that lists the dependencies, such as a requirements.txt)
+
+# TEMPLATES FOR .GITIGNORE FILES: https://github.com/github/gitignore
+
+# Example of a gitignore file for python projects
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Environments
+.env*
+.venv*
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs and editors
+.vscode
+.idea

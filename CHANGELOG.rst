@@ -2,6 +2,10 @@
 Changelog
 =========
 
+Version 5.3.4 (20250206)
+========================
+- modified configure.sh to support deployments in a docker
+
 Version 5.3.3 (20241113)
 ========================
 - correct bug in restart procedure wrt loading ice thickness

@@ -3,19 +3,19 @@
 #-----------------------------------------------------------------------------------------
 # Script option(s)
 Script="S3M Library Builder"
-Version="1.1.0"
-Date='2023/12/14'
+Version="1.2.0"
+Date='2025/02/06'
 
 # Other option(s)
-Archive_Default="s3m_model-apps_codes_5.2.0.tar.gz"
+Archive_Default="s3m-5.3.4.tar.gz"
 # Default folder
-Lib_Dir_Deps_Default="$HOME/fp_libs_system"
+Lib_Dir_Deps_Default="$HOME/fp_libs_s3m"
 # Executables folder
 Lib_Dir_Exec_Default="$Lib_Dir_Deps_Default/s3m"
 # Compilation Mode
 Lib_Building_Default=false
 # Executable name
-Exec_Default='S3M_Model_V5_3_0.x'
+Exec_Default='S3M_Model_V5_3_4.x'
 #-----------------------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------
